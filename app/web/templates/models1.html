@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    <meta name="description" content="{% block description %}{% endblock %}">
+
+
+
+    <link rel="icon" href="{{ url_for('static',filename='sjy2.ico') }}" type="image/x-icon">
+    <script src="//unpkg.com/vue/dist/vue.js"></script>
+    <script src="//unpkg.com/element-ui@2.7.0/lib/index.js"></script>
+    <link rel="stylesheet" href="//unpkg.com/element-ui@2.6.0/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+    <style>
+        .demo-table-expand {
+        font-size: 0;
+      }
+      .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+      }
+      .demo-table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 50%;
+      }
+      a{text-decoration:none}
+        .head_title{
+            background-color: #222 !important;
+            padding: 0!important;
+            margin: 0!important;
+        }
+        .el-menu-demo{
+           float: right;
+        }
+        .footer{
+            background: url('{{ url_for('static',filename='footer.jpg') }}') no-repeat 50%;
+            background-size: 100%;
+            position: relative;
+
+        }
+        .footer_s{
+            height: 450px;
+        }
+        .el-col a{
+            color: #ffffff;
+        }
+        .foots p{
+            text-align: center;
+            font-size: 12px;
+        }
+
+    </style>
+
+    {% block head_css %}
+
+    {% endblock %}
+</head>
+<body>
+
+
+
+    {% block content %}
+
+        <el-row type="flex" class="row-bg head_title" justify="center">
+            <el-col :span="1">
+                    <iframe src=" {{ url_for('static',filename='sjy_logo2.svg') }}" width="300" height="40"  style="border: none;margin-top: 10px"></iframe>
+            </el-col>
+            <el-col :span="12">
+                <el-menu
+                  :default-active="activeIndex2"
+                  class="el-menu-demo"
+                  mode="horizontal"
+                  @select="handleSelect"
+                  router
+                  background-color="#333"
+                  text-color="#fff"
+                  active-text-color="#ffd04b"
+                >
+                  <el-menu-item index="/">首页</el-menu-item>
+                  <el-menu-item index="">私募基地</el-menu-item>
+                  <el-menu-item index="" >对接平台</el-menu-item>
+                  <el-menu-item index="/research" >研究院</el-menu-item>
+                  <el-menu-item index="">小镇系统</el-menu-item>
+                </el-menu>
+            </el-col>
+        </el-row>
+
+    {% endblock %}
+
+
+
+    {% block footer %}
+        <el-row  type="flex"   justify="center" class="footer">
+            <el-col :span="12" class="footer_s" style="color: #ffffff" style="margin-top-top: 50px">
+                <el-row style="margin-top: 40px;border-bottom: #fff solid 1px;padding-bottom: 40px">
+                  <el-col :span="16">
+                      <el-col :span="8">
+                          <h4>服务</h4>
+                          <p>私募基地</p>
+                          <p>资源对接</p>
+                          <p>小镇系统</p>
+                          <p>基金注册</p>
+                          <p>基金税筹</p>
+                      </el-col>
+                      <el-col :span="8">
+                          <h4>研究院</h4>
+                          <p>基金设院</p>
+                          <p>产品设计</p>
+                          <p>基金财务</p>
+                          <p>金融培训</p>
+                      </el-col>
+                      <el-col :span="8">
+                          <h4>关于我们</h4>
+                          <p>设基院简介</p>
+                          <p><a href="/town_login">设基院大数据</a></p>
+                      </el-col>
+                  </el-col>
+
+                  <el-col :span="8">
+                      <p style="text-align: center;border: #fff solid 1px; margin: 20px 5% 10px 5%;padding: 10px; border-radius: 5px;">咨询微信：shuimuke01</p>
+                      <el-col :span="12" style="text-align: center">
+                          <img src="{{ url_for('static',filename='rwm2.jpg') }}" width="80%">
+                          <p>创投税收计算工具</p>
+                      </el-col>
+                      <el-col :span="12" style="text-align: center">
+                          <img src="{{ url_for('static',filename='rwm3.jpg') }}" width="80%">
+                          <p>设基院公众号</p>
+                      </el-col>
+                  </el-col>
+
+
+                </el-row>
+                <el-row >
+                    <el-col :span="24" class=" foots" style="color: #ffffff" style="margin-top-top: 10px">
+                                <p>邮箱：17184116593@163.com</p>
+                                <p>长兴宁本企业管理咨询有限公司 版权所有浙ICP备17055416号-1</p>
+                                </div>
+
+                    </el-col>
+
+                </el-row>
+            </el-col>
+
+        </el-row>
+
+    {% endblock %}
+
+
+
+</body>
+
+
+    {% block js %}
+
+    {% endblock %}
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

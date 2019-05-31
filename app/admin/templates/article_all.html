@@ -1,0 +1,304 @@
+{% extends 'models.html' %}
+    {% block title %}
+        设基院后台
+    {% endblock %}
+
+    {% block head_css %}
+        <style>
+        .el-row {
+            margin-bottom: 20px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          .el-col {
+            border-radius: 4px;
+          }
+          .bg-purple-dark {
+            background: #99a9bf;
+          }
+          .bg-purple {
+            background: #d3dce6;
+          }
+          .bg-purple-light {
+            background: #e5e9f2;
+          }
+          .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+          }
+          .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+          }
+        .el-row{
+            padding-left: 20px;
+        }
+        .m_ico a{
+            text-decoration: none;
+            color: #475669;
+        }.m_ico{
+                background: none;
+                color: #475669;
+        }
+        .m_ico p{
+            display: inline;
+        }
+        .el-button.is-circle {
+            border-radius: 65%;
+            padding: 1px;
+        }
+        .amap{
+            height: 440px;
+            margin-left: 0;
+            width: 600px;
+            background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat;
+            background-size: auto 100%;
+            position: relative;
+        }
+        .mapCur {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 180px;
+            right: 180px;
+            cursor: pointer;
+        }
+        .mapCur>span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 4px;
+            background: rgba(36,164,255,.2);
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .mapCur2>span{
+            background: rgba(255, 28, 67, 0.2);
+        }
+        .mapCur>span:before {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #24a4ff;
+    left: 10px;
+    top: 10px;
+    border-radius: 50%;
+    z-index: 19;
+        }
+        .mapCur2>span:before{
+            background: rgba(255, 28, 67,1);
+        }
+
+    .mapCurHover>span {
+        width: 28px;
+        height: 28px;
+        margin: 0;
+        z-index: 9;
+        background-image: linear-gradient(-225deg,#1ec6ff 1%,#21b5ff 36%,#2796ff);
+    }
+.mapCurHover>span:before {
+    background: #eeeaff;
+    z-index: 999;
+}
+
+
+
+        </style>
+    {% endblock %}
+
+
+    {% block content %}
+        {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+        <template>
+            <el-table
+              :data="tableData.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))"
+              style="width: 100%"
+
+              stripe>
+              <el-table-column
+                prop="date"
+                label="日期"
+                sortable
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="title"
+                label="标题"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="label_value"
+                label="标签">
+              </el-table-column>
+
+{#                <el-table-column#}
+{#                  prop="label_value"#}
+{#                  label="标签"#}
+{#                  width="100"#}
+{#                  :filters="[{ text: '家', value: '家' }, { text: '公司', value: '公司' }]"#}
+{#                  :filter-method="filterTag"#}
+{#                  filter-placement="bottom-end">#}
+{#                  <template slot-scope="scope">#}
+{#                    <el-tag#}
+{#                      :type="scope.row.tag === '家' ? 'primary' : 'success'"#}
+{#                      disable-transitions>{{scope.row.tag}}</el-tag>#}
+{#                  </template>#}
+{#                </el-table-column>#}
+
+
+
+
+
+
+
+              <el-table-column
+                prop="tt"
+                label="索引标签">
+              </el-table-column>
+
+              <el-table-column
+                prop="texts"
+                label="文章简介">
+              </el-table-column>
+
+
+
+              <el-table-column
+                  fixed="right"
+                  width="150"
+              >
+
+                  <template slot="header" slot-scope="scope">
+                    <el-input
+                      v-model="search"
+                      size="mini"
+                      placeholder="输入关键字搜索"/>
+                  </template>
+
+
+
+
+
+                  <template slot-scope="scope">
+
+                    <el-button @click="handleClick(scope.$index ,scope.row.uid)" type="text" size="small">编辑</el-button>
+                    <el-button @click="deleteClick(scope.$index ,scope.row)" type="text" size="small">垃圾箱</el-button>
+                  </template>
+              </el-table-column>
+
+
+            </el-table>
+        </template>
+
+    {% endblock %}
+
+
+
+    {% block footer %}
+
+    {% endblock %}
+
+
+
+
+    {% block js %}
+        <script>
+             var Main = {
+                 data() {
+                     return {
+                         search: '',
+                         indexs:'/article_all/',
+                         tableData: [
+                             {% for i in article %}
+                                {
+                                    uid:'{{ i.uid }}',
+                                    title:'{{ i.title }}',
+                                    label_value:'{{ i.label_value }}',
+                                    date:'{{ i.date }}',
+                                    img_url:'{{ i.img_url }}',
+                                    tt:'{{ i.tt }}',
+                                    texts:'{{ i.texts }}',
+                                },
+                             {% endfor %}
+                         ],
+                     }
+                 },
+                 methods: {
+                     handleClick(index , row) {
+                         var url='/article_ll/?uid='+ row;
+                         window.open(url, "_self");
+                     },
+                     handleSelect(key, keyPath) {
+                            console.log(key, keyPath);
+                            window.open(key, "_self");
+                     },
+                     deleteClick(index, row){
+                         _this= this;
+
+                         var date = {uid:row.uid};
+
+                         axios.post('{{ url_for('admins.art_delete') }}', date)
+                                  .then(function (response) {
+                                      response=response.data
+                                      if(response.value == 1){
+                                          _this.$message({
+                                            message: response.message,
+                                            type: 'success'
+                                          });
+
+
+
+
+                                          var y= _this.tableData;
+
+                                          for(var i=0;i<=y.length;i++){
+                                              if(y[i].uid == row.uid ){
+                                                  _this.tableData.splice(i, 1);
+                                              }
+                                          }
+
+
+
+
+                                      }else{
+                                          _this.$message({
+                                            message: '修改失败',
+                                            type: 'warning'
+                                          });
+                                      }
+                                  })
+                                  .catch(function (error) {
+                                    console.log(response);
+                                    _this.$message.error({
+                                            message: '添加出错，请联系程序员',
+                                          });
+                                  });
+
+
+
+
+                     },
+                 },
+             }
+             var Ctor = Vue.extend(Main)
+             new Ctor().$mount('#app')
+        </script>
+    {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>企业税筹咨询问题采集表</title>
+
+    <script src="//unpkg.com/vue/dist/vue.js"></script>
+    <script src="//unpkg.com/element-ui@2.6.0/lib/index.js"></script>
+    <link rel="stylesheet" href="//unpkg.com/element-ui@2.6.0/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <style>
+
+    </style>
+
+</head>
+<body>
+<div id="app">
+
+
+        <el-row type="flex" class="row-bg" justify="center">
+
+          <el-col :span="23">
+            <h2 style="text-align: center">宁本 企业税筹咨询问题采集表</h2>
+           <el-form ref="form" :model="form" label-position="top">
+
+
+
+
+
+          <el-form-item label="您有什么节税需求【多选题】">
+            <el-checkbox-group v-model="form.demand">
+              <div v-for="(i, x) in demand" :key="x">
+                  <el-checkbox :label="i.label" name="type" ></el-checkbox>
+                  <el-input  v-model="form.demand_text[x]"></el-input>
+              </div>
+            </el-checkbox-group>
+          </el-form-item>
+
+
+
+
+
+          <el-form-item label="您公司类型">
+            <el-input v-model="form.company_genre"></el-input>
+          </el-form-item>
+
+
+
+          <el-form-item label="纳税额度预计">
+            <el-radio-group v-model="form.taxes">
+              <el-radio :label="i.value" v-for="i in taxes"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+
+          <el-form-item label="您的职位">
+            <el-input v-model="form.position"></el-input>
+          </el-form-item>
+
+
+
+          <el-form-item label="您想了解哪些地区的税收优惠政策【多选题】">
+            <el-checkbox-group v-model="form.policy">
+              <div v-for="(i, x) in policy" :key="x">
+                  <el-checkbox :label="i.label" name="type" ></el-checkbox>
+              </div>
+              <el-input v-model="form.policy_s"></el-input>20.
+            </el-checkbox-group>
+          </el-form-item>
+
+          <el-form-item label="补充说明">
+            <el-input v-model="form.text"></el-input>
+          </el-form-item>
+
+          <el-form-item label="您的联系方式"
+             prop="phone"
+             :rules="[ { required: true, message: '请输入您的联系方式', trigger: 'blur' }]"
+          >
+            <el-input v-model="form.phone"
+            ></el-input>
+          </el-form-item>
+
+
+
+             <el-form-item>
+                <el-button type="primary" @click="onSubmit(form)">立即创建</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+
+
+        </el-form>
+
+          </el-col>
+
+        </el-row>
+
+
+
+
+
+</div>
+</body>
+<script>
+
+var Main = {
+    data() {
+      return {
+
+
+
+        policy:[
+            {label:'山东',},
+            {label:'河南',},
+            {label:'上海',},
+            {label:'浙江',},
+            {label:'江苏',},
+            {label:'福建',},
+            {label:'更多想要了解的地区',},
+        ],
+          demand:[
+            {label:'高管节税',},
+            {label:'持股平台设立',},
+            {label:'企业所得税节税',},
+            {label:'增值税节税',},
+            {label:'其他选项',},
+        ],
+        taxes:[
+            {value:'100万以下'},
+            {value:'100万-500万'},
+            {value:'500万-1000万'},
+            {value:'1000万以上'},
+        ],
+
+        form: {
+            demand:[],
+            demand_text:[],
+            company_genre:'',
+            taxes:'',
+            position:'',
+            policy:[],
+            policy_s:'',
+            text:'',
+            phone:'',
+        },
+
+      };
+    },
+    methods: {
+      onSubmit(form) {
+          _this=this;
+           console.log( _this.form);
+
+
+            _this.$refs[form].validate((valid) => {
+                if (valid) {
+                    axios.post('{{ url_for('survey.forms') }}', _this.form)
+                        .then(function (response) {
+                            if(response){
+                                response=response.data;
+                                _this.$message({
+                                    message: '数据添加成功',
+                                    type: 'success'
+                                });
+
+                            }else{
+                                _this.$message({
+                                    message: '数据添加失败',
+                                    type: 'warning'
+                                });
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log(response);
+                            _this.$message.error({
+                                message: '添加出错，请联系程序员',
+                            });
+                        });
+
+                } else {
+                    console.log(valid);
+                    _this.$message({
+                        message: '数据为完整',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
+    }
+  }
+var Ctor = Vue.extend(Main)
+new Ctor().$mount('#app')
+
+</script>
+
+</html>

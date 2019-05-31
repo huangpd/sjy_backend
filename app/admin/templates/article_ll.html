@@ -1,0 +1,503 @@
+{% extends 'models.html' %}
+    {% block title %}
+        设基院后台
+    {% endblock %}
+
+    {% block head_css %}
+        <style>
+        .el-row {
+            margin-bottom: 20px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          .el-col {
+            border-radius: 4px;
+          }
+          .bg-purple-dark {
+            background: #99a9bf;
+          }
+          .bg-purple {
+            background: #d3dce6;
+          }
+          .bg-purple-light {
+            background: #e5e9f2;
+          }
+          .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+          }
+          .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+          }
+        .el-row{
+            padding-left: 20px;
+        }
+        .m_ico a{
+            text-decoration: none;
+            color: #475669;
+        }.m_ico{
+                background: none;
+                color: #475669;
+        }
+        .m_ico p{
+            display: inline;
+        }
+        .el-button.is-circle {
+            border-radius: 65%;
+            padding: 1px;
+        }
+        .amap{
+            height: 440px;
+            margin-left: 0;
+            width: 600px;
+            background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat;
+            background-size: auto 100%;
+            position: relative;
+        }
+        .mapCur {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 180px;
+            right: 180px;
+            cursor: pointer;
+        }
+        .mapCur>span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 4px;
+            background: rgba(36,164,255,.2);
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .mapCur2>span{
+            background: rgba(255, 28, 67, 0.2);
+        }
+        .mapCur>span:before {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #24a4ff;
+    left: 10px;
+    top: 10px;
+    border-radius: 50%;
+    z-index: 19;
+        }
+        .mapCur2>span:before{
+            background: rgba(255, 28, 67,1);
+        }
+
+    .mapCurHover>span {
+        width: 28px;
+        height: 28px;
+        margin: 0;
+        z-index: 9;
+        background-image: linear-gradient(-225deg,#1ec6ff 1%,#21b5ff 36%,#2796ff);
+    }
+
+.text.item{
+            margin: 10px 0;
+        }
+
+
+        </style>
+
+    {% endblock %}
+
+
+    {% block content %}
+        {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+
+
+
+
+        <el-row>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+                    <el-col :span="14">
+                <h3>添加文章标签</h3>
+                    <el-form-item label="文章标签">
+                        <el-input v-model="formInline.value" placeholder="文章标签"></el-input>
+                    </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="ontitle">添加标签</el-button>
+                </el-form-item>
+                    </el-col>
+            </el-form>
+        </el-row>
+        <el-row>
+        <el-form ref="form" :model="form" label-width="80px"  :model="form" :rules="rules" class="demo-ruleForm">
+              <el-col :span="14">
+                  <h3>文章参数</h3>
+                      <el-form-item label="文章标题" prop="title">
+                          <el-input v-model="form.title" ></el-input>
+                      </el-form-item>
+
+                      <el-form-item label="索引标签" prop="tt">
+                          <el-input v-model="form.tt"></el-input>
+                      </el-form-item>
+                      <p style="color: #ff3d4c">↑↑↑↑↑↑    标签间隔用 “|” ！！！！！</p>
+
+
+                      <el-form-item label="文章时间" prop="date">
+                          <el-col :span="11">
+                              <el-date-picker
+                                      type="date"
+                                      placeholder="选择日期"
+                                      v-model="form.date"
+                                      style="width: 100%;"
+                                      align="right"
+                                      :picker-options="pickerOptions1"
+                                      value-format="yyyy-MM-dd">
+                              </el-date-picker>
+                          </el-col>
+                      </el-form-item>
+                      <el-form-item label="文章标签" prop="label">
+                          <el-select v-model="form.label" placeholder="请选择文章标签">
+                              <el-option :label="i.value" :value="i.uid" v-for="i in formInlines"></el-option>
+                          </el-select>
+                      </el-form-item>
+
+                      <el-form-item label="首图上传" >
+                          <el-upload
+                          action="{{ url_for('admins.articlaeimg') }}"
+                          list-type="picture-card"
+                          :on-preview="handlePictureCardPreview"
+                          :on-remove="handleRemove"
+                          :file-list="dialogImageUrl"
+                          >
+                          <i class="el-icon-plus"></i>
+                          </el-upload>
+
+                          <el-dialog :visible.sync="dialogVisible">
+                              <img width="100%" :src="dialogImageUrl" alt="">
+                          </el-dialog>
+                      </el-form-item>
+                      <el-form-item label="文章简介" prop="text">
+                          <el-input type="textarea" v-model="form.text"></el-input>
+                      </el-form-item>
+              </el-col>
+              <el-col :span="9" style="float: right;  margin-top: 40px">
+                  <el-form-item>
+                      <el-button type="primary" @click="onSubmit('form')">立即创建</el-button>
+                      <el-button  @click="resetForm('form')">重置</el-button>
+                  </el-form-item>
+
+
+                  <el-card class="box-card" style="width: 200px;margin-left: 80px;">
+                        <h3 style="padding-top: 0;margin-top: 0">标签列表</h3>
+                      <div v-for="(o,index) in formInlines" :key="index" class="text item">
+                        {{o.value}}
+                        <el-button icon="el-icon-error" circle @click="on_i_delete(o.uid,index)" style="float: right;"></el-button>
+                      </div>
+                  </el-card>
+
+
+              </el-col>
+              <el-col :span="24">
+
+              </el-col>
+              <el-col :span="14">
+                  <h3>编辑文章</h3>
+                  <div id="editor">
+                        {{ article.html | safe }}
+                  </div>
+              </el-col>
+
+
+        </el-form>
+        </el-row>
+
+
+
+
+
+    {% endblock %}
+
+
+
+    {% block footer %}
+
+    {% endblock %}
+
+
+
+
+    {% block js %}
+    <script src="//unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+        <script>
+             var Main = {
+                 data() {
+                     return {
+                          editor: '',
+                          pickerOptions1: {
+                                  {#disabledDate(time) {#}
+                                  {#  return time.getTime() > Date.now();#}
+                                  {# },#}
+                                  shortcuts: [{
+                                    text: '今天',
+                                    onClick(picker) {
+                                      picker.$emit('pick', new Date());
+                                    }
+                                  }, {
+                                    text: '昨天',
+                                    onClick(picker) {
+                                      const date = new Date();
+                                      date.setTime(date.getTime() - 3600 * 1000 * 24);
+                                      picker.$emit('pick', date);
+                                    }
+                                  }, {
+                                    text: '一周前',
+                                    onClick(picker) {
+                                      const date = new Date();
+                                      date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                                      picker.$emit('pick', date);
+                                    }
+                                  }]
+                          },
+                         dialogImageUrl: [{url:'{{ article.img_url }}',}],
+                         formInline: {
+                              value: ''
+                         },
+                         formInlines: [
+
+                             {% for i in label %}
+                                {
+                                    uid:'{{ i.uid }}',
+                                    value:'{{ i.value }}',
+                                },
+                             {% endfor %}
+
+                             ],
+                         form: {
+                              title: '{{ article.title }}',
+                              uid: '{{ article.uid }}',
+                              tt: '{{ article.tt }}',
+                              text: '{{ article.texts }}',
+                              date: '{{ article.date }}',
+                              label: '{{ article.label_uid }}',
+                              html:''
+                         },
+                         rules: {
+                              title: [
+                                { required: true, message: '请输入标题', trigger: 'blur' },
+                                {#{ min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }#}
+                              ],
+                              tt: [
+                                { required: true, message: '请输入索引标签，用于文章检索（百度搜索）', trigger: 'blur' }
+                              ],
+                              text: [
+                                { required: true, message: '请输入文章简介', trigger: 'blur' },
+                                { min: 10, message: '长度在 10个字符以上', trigger: 'blur' }
+
+                              ],
+                              date: [
+                                { required: true, message: '请选择时间', trigger: 'change' }
+                              ],
+                              label: [
+                                { required: true, message: '请至少选择一个标签，用于文章分类', trigger: 'change' }
+                              ],
+                            },
+                     }
+                 },
+                mounted () {
+                    this.initEditor()
+                },
+                 methods: {
+                     async initEditor () {
+                            var E = window.wangEditor
+                            var editor = new E('#editor')
+                            this.editor = editor
+                            /* 配置菜单栏 */
+                            this.editor.customConfig.menu = [
+                                'head',  // 标题
+                                'bold',  // 粗体
+                                'fontSize',  // 字号
+                                'fontName',  // 字体
+                                'italic',  // 斜体
+                                'underline',  // 下划线
+                                'strikeThrough',  // 删除线
+                                'foreColor',  // 文字颜色
+                                'backColor',  // 背景颜色
+                                'link',  // 插入链接
+                                'list',  // 列表
+                                'justify',  // 对齐方式
+                                'quote',  // 引用
+                                'emoticon',  // 表情
+                                'image',  // 插入图片
+                                'table',  // 表格
+                                'code',  // 插入代码
+                                'undo',  // 撤销
+                                'redo'  // 重复
+                            ]
+                            this.editor.customConfig.uploadImgMaxLength = 5
+                            this.editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024 /* 将图片大小限制为 3M 默认为5M /
+                            /* 自定义图片上传（支持跨域和非跨域上传，简单操作）*/
+                            this.editor.customConfig.customUploadImg = async (files, insert) => {
+                                /* files 是 input 中选中的文件列表 */
+                                let formData = new FormData()
+                                formData.append('file', files[0])
+                                let data = await this.upload(formData)
+                                /* upload方法是后台提供的上传图片的接口 */
+                                /* insert 是编辑器自带的 获取图片 url 后，插入到编辑器的方法 上传代码返回结果之后，将图片插入到编辑器中*/
+                                insert(data.imgUrl)
+                            }
+                            this.editor.customConfig.onchange = (html) => {
+                                /* html 即变化之后的内容 */
+                            }
+                            this.editor.create() /* 创建编辑器 */
+                     },
+
+                     {#添加标签#}
+                     ontitle(){
+                         _this = this
+
+                         axios.post('{{ url_for('admins.titlein') }}', _this.formInline)
+                             .then(function (response) {
+                                  console.log(response.data);
+                                 if(response){
+                                     response=response.data;
+                                     _this.$message({
+                                         message: '标签添加成功',
+                                         type: 'success'
+                                     });
+                                     var y=_this.formInlines;
+                                     y.push(response)
+                                 }else{
+                                     _this.$message({
+                                         message: '标签添加失败',
+                                         type: 'warning'
+                                     });
+                                 }
+                             }).catch(function (error) {
+                                 console.log(response.data);
+                                 _this.$message.error({
+                                     message: '添加出错，请联系程序员',
+                                 });
+                             });
+                     },
+
+                     {#添加标签#}
+
+
+                     handleSelect(key, keyPath) {
+                         console.log(key, keyPath);
+                         window.open(key, "_self");
+                     },
+
+                     onSubmit(form) {
+                         _this = this;
+
+                         console.log(_this.dialogImageUrl);
+                         console.log(_this.dialogImageUrl);
+
+                         _this.form.html=_this.editor.txt.html();
+
+
+                         _this.$refs[form].validate((valid) => {
+                              if (valid) {
+
+                                  axios.post('{{ url_for('admins.articlaell') }}', _this.form)
+                                     .then(function (response) {
+                                         if(response.data.value==1){
+                                             _this.$message({
+                                                 message: response.data.message,
+                                                 type: 'success'
+                                             });
+                                             var y=_this.formInlines;
+                                             y.push(response)
+                                         }else{
+                                             _this.$message({
+                                                 message: response.data.message,
+                                                 type: 'warning'
+                                             });
+                                         }
+                                     }).catch(function (error) {
+                                         _this.$message.error({
+                                             message: '添加出错，请联系程序员',
+                                         });
+                                     });
+                              } else {
+                                return false;
+                              }
+                         });
+
+
+
+
+                         },
+
+                     resetForm(form) {
+                        this.$refs[form].resetFields();
+                     },
+
+
+                     handleRemove(file, fileList) {
+                         console.log(file, fileList);
+                         },
+                     handlePictureCardPreview(file) {
+                         this.dialogImageUrl = file.url;
+                         this.dialogVisible = true;
+                     },
+                     on_i_delete(v, index){
+                         var date ={uid:v};
+                         _this= this;
+                         _this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+                              confirmButtonText: '确定',
+                              cancelButtonText: '取消',
+                              type: 'warning'
+                            }).then(() => {
+
+                                axios.post('{{ url_for('admins.titlein_delete') }}', date)
+                                  .then(function (response) {
+                                      response=response.data
+                                      if(response.value == 1){
+                                          _this.$message({
+                                            message: response.message,
+                                            type: 'success'
+                                          });
+                                          _this.formInlines.splice(index, 1);
+
+                                      }else{
+                                          _this.$message({
+                                            message: '修改失败',
+                                            type: 'warning'
+                                          });
+                                      }
+                                  })
+                                  .catch(function (error) {
+                                    console.log(response);
+                                    _this.$message.error({
+                                            message: '添加出错，请联系程序员',
+                                          });
+                                  });
+                             
+                            }).catch(() => {
+                              _this.$message({
+                                type: 'info',
+                                message: '已取消删除'
+                              });
+                            });
+
+
+
+
+
+                     }
+
+                 },
+             }
+             var Ctor = Vue.extend(Main)
+             new Ctor().$mount('#app')
+        </script>
+
+
+
+
+
+
+    {% endblock %}

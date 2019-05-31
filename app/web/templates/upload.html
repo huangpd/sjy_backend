@@ -1,0 +1,147 @@
+{% extends 'models1.html' %}
+
+{% block content %}
+    <div id="app" >
+        <el-menu
+          :default-active="activeIndex2"
+          class="el-menu-demo"
+          mode="horizontal"
+          @select="handleSelect"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b">
+            <el-menu-item ><a href="/" >宁本文件存储中心</a></el-menu-item>
+          <el-submenu index="2">
+            <template slot="title">我的工作台</template>
+            <el-menu-item index="2-1">选项1</el-menu-item>
+            <el-menu-item index="2-2">选项2</el-menu-item>
+            <el-menu-item index="2-3">选项3</el-menu-item>
+
+          </el-submenu>
+
+          <el-menu-item index="4"><a href="/upload" >文件上传</a></el-menu-item>
+          <el-menu-item>
+              <el-input placeholder="请输入内容" v-model="input5" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search"></el-button>
+              </el-input>
+          </el-menu-item>
+        </el-menu>
+
+
+        <el-form ref="form" :model="form" label-width="80px" style="width: 50%;margin-top: 50px">
+          <el-form-item label="文件类别">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+
+          <el-form-item label="文件类型">
+            <el-radio-group v-model="form.resource">
+              <el-radio label="text">文本文件</el-radio>
+              <el-radio label="video">视频文件</el-radio>
+            </el-radio-group>
+          </el-form-item>
+            
+          <el-form-item label="文件上传">
+            <el-upload
+
+              method="post"
+              class="upload-demo"
+              action="{{ url_for('web.file') }}"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              multiple
+
+              :file-list="fileList">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">尽量上传</div>
+            </el-upload>
+          </el-form-item>
+
+          <el-form-item label="备注">
+            <el-input type="textarea" v-model="form.desc"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit()">提交</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+        </el-form>
+
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script>
+
+    var Main = {
+        data() {
+          return {
+                fileList: [
+                      // {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
+                      // {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
+                    ],
+                input10: '',
+                form: {//form里面的参数
+                      name: '123',
+                      region: '',
+                      resource: '',
+                      desc: ''
+                },
+
+               param:"",//表单要提交的参数
+          };
+        },
+
+        methods: {
+
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            open() {
+                this.$message('这是一条消息提示');
+            },
+
+            handlePreview(file) {
+                console.log(file);
+            },
+
+            beforeRemove(file) {
+                return this.$confirm(`确定移除 ${ file.name }？`);
+            },
+
+            onSubmit() {
+                var _this = this;
+                  axios.post('{{ url_for('web.uploads') }}', this.form)
+                      .then(function (response) {
+
+                          if(response.data.message == 1){
+                              _this.$message({
+                                message: '信息添加成功',
+                                type: 'success'
+                              });
+                          }else{
+                              _this.$message({
+                                message: '信息添加失败',
+                                type: 'warning'
+                              });
+                          }
+                      })
+                      .catch(function (error) {
+                        _this.$message.error({
+                                message: '添加出错，请联系程序员',
+                              });
+                      });
+            }
+
+        }
+    }
+
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+
+
+
+
+
+</script>
+{% endblock %}

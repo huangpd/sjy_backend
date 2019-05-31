@@ -1,0 +1,282 @@
+{% extends 'models1.html' %}
+    {% block title %}设基院|研究中心|研究院{% endblock %}
+    {% block head_css %}
+        <style>
+                .amap{
+                    height: 400px;
+                    margin-left: 0;
+                    background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat 50%;
+                    background-size: auto 100%;
+                    position: relative;
+                }
+              .el-row {
+                margin-bottom: 20px;
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
+              .el-col {
+                border-radius: 4px;
+              }
+              .bg-purple-dark {
+                background: #99a9bf;
+              }
+              .bg-purple {
+                  padding: 10px;
+                  text-align: left!important;
+              }
+              .bg-purple-light {
+                background: #333333;
+                  color: #fff;
+              }
+              .grid-content {
+                border-radius: 4px;
+                min-height: 36px;
+                  display: block;
+                  text-align: center;
+                  padding: 10px;
+              }
+                .grid-content h3{
+                    margin: 10px;
+                }
+              .row-bg {
+                padding: 10px 0;
+                background-color: #f9fafc;
+              }
+            .lift{
+                padding-top: 20px;
+                padding-bottom: 20px;
+                border-bottom: #999 solid 1px;
+            }
+            .bg-purple h4{
+                padding: 0;
+                margin: 0;
+            }
+            .bg-purple p{
+                color: #666;
+            }
+            .bg-purple span{
+                color: #999;
+            }
+            .el-pagination{
+                text-align: center;
+            }
+            .el-card{
+                margin-top: 10px;
+            }
+        .el-card__body{
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        </style>
+    {% endblock %}
+
+    {% block content %}
+        <div id="app">
+
+            <el-row>
+                {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+                <template>
+                  <el-carousel height="500px" arrow="always">
+                    <el-carousel-item v-for="items in itemsu" :key="items.id" >
+                      <el-col><img ref="imgHeight" :src='items.img' class="banner_img" width="100%"/></el-col>
+                    </el-carousel-item>
+                  </el-carousel>
+                </template>
+            </el-row>
+
+
+
+            <el-row type="flex" justify="center" :gutter="20" style="margin-top: 50px;margin-bottom: 50px">
+              <el-col :span="10">
+                  <div class="grid-content bg-purple-light">
+                      <h3>研究文章</h3>
+                  </div>
+
+
+
+
+
+                  <el-row class="lift" v-for="art in article">
+                      <a :href="art.uid">
+                      <el-col :span="10">
+                          <div class="grid-content bg-purple">
+                              <img :src="art.img_url" width="100%"/>
+                          </div>
+                      </el-col>
+                      <el-col :span="14">
+                          <div class="grid-content bg-purple">
+                              <h4 style="color: #333333">
+                                  {{art.title}}
+                              </h4>
+                              <p>
+                                  {{art.texts}}
+                              </p>
+                              <span>{{art.date}}  设基院 更多>>></span>
+                          </div>
+                      </el-col>
+                      </a>
+                  </el-row>
+
+
+
+                  {% if pagination  %}
+                      <el-pagination
+                          background
+                          layout="prev, pager, next"
+                          :total="{{ pagination.total }}"
+                          :current-page="{{ pagination.page }}"
+                          :page-size="{{ pagination.per_page }}"
+
+                          @size-change="handleSizeChange"
+                          @current-change="handleCurrentChange"
+                      >
+                      </el-pagination>
+                  {% endif %}
+
+              </el-col>
+
+
+              <el-col :span="4">
+                 <a href="/research/" style="text-align: center">
+                    <div class="grid-content bg-purple-light">
+                      <h3>全部</h3>
+                    </div>
+                 </a>
+                  <a  v-for="la in label":href="la.uid" style="text-align: center">
+                       <el-card  shadow="hover">{{la.value}} </el-card>
+                  </a>
+              </el-col>
+
+
+
+            </el-row>
+
+
+
+
+        {% endblock %}
+
+        {% block footer %}
+            {{ super() }}   {#继承原来模板信息 既 末尾栏#}
+        {% endblock %}
+    </div>
+
+    {% block js %}
+
+        <script src="https://unpkg.com/vue-amap/dist/index.js"></script>
+
+
+
+
+        <script>
+
+
+
+
+        addParama = function(key, val) {
+        var search = window.location.search;
+        if (search.indexOf('?') != -1) {
+            search = search.substring(1);
+            var search_arr = search.split('&');
+            var url_arr = [];
+            var exists = 0;
+            for (var i = 0; i < search_arr.length; i++) {
+                if (!search_arr[i])
+                    continue;
+                var temp = search_arr[i].split('=');
+                if (key == temp[0]) {
+                    exists = 1;
+                    url_arr.push(key + '=' + val);
+                } else {
+                    if (temp[0] != 'page' && temp[0] != 'token') {
+                        url_arr.push(search_arr[i]);
+                    }
+                }
+            }
+            if (!exists)
+                url_arr.push(key + '=' + val);
+            url = window.location.pathname + '?' + url_arr.join('&');
+        } else {
+            url = window.location.pathname + '?' + key + '=' + val;
+        }
+        window.location.href = url;
+    };
+
+
+
+
+
+
+
+
+
+
+         var Main = {
+            data() {
+              return {
+                  activeIndex2: '/research',
+                  show: true,
+                    itemsu : [
+                        {id:0,title:'1',url:'1',img:'{{ url_for('static',filename='uploads/weixintupian_20190410090225.jpg') }}' },
+                    ],
+                  label:[
+                      {% for i in label %}
+                          {
+                              uid:'/research?uid='+'{{ i.uid }}',
+                              value:'{{ i.value }}',
+                          },
+                      {% endfor %}
+                  ],
+                  article:[
+                      {% for i in article %}
+                                {
+                                    uid:'/articles?uid='+'{{ i.uid }}',
+                                    title:'{{ i.title }}',
+                                    label_value:'{{ i.label_value }}',
+                                    date:'{{ i.date }}',
+                                    img_url:'{{ i.img_url }}',
+                                    tt:'{{ i.tt }}',
+                                    texts:'{{ i.texts }}',
+                                },
+                      {% endfor %}
+                  ]
+
+              }
+            },
+            methods: {
+              label(key) {
+                  console.log(key);
+                  window.open(key, "_self");
+              },
+
+              handleSelect(key) {
+                  console.log(key);
+                  window.open(key, "_self");
+              },
+                {#handleSizeChange(val) {#}
+                {#    console.log(`每页 ${val} 条`);#}
+                {# },#}
+                handleCurrentChange(val) {
+                    console.log(`当前页: ${val}`);
+
+
+                    var url=addParama('page',val);
+
+                    window.open(url, "_self");
+
+                }
+
+            },
+
+          }
+
+            var Ctor = Vue.extend(Main)
+            new Ctor().$mount('#app')
+        </script>
+
+
+
+    {% endblock %}

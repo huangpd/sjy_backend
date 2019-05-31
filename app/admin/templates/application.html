@@ -1,0 +1,260 @@
+{% extends 'models.html' %}
+    {% block title %}
+        设基院后台
+    {% endblock %}
+
+    {% block head_css %}
+        <style>
+        .el-row {
+            margin-bottom: 20px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          .el-col {
+            border-radius: 4px;
+          }
+          .bg-purple-dark {
+            background: #99a9bf;
+          }
+          .bg-purple {
+            background: #d3dce6;
+          }
+          .bg-purple-light {
+            background: #e5e9f2;
+          }
+          .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+          }
+          .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+          }
+        .el-row{
+            padding-left: 20px;
+        }
+        .m_ico a{
+            text-decoration: none;
+            color: #475669;
+        }.m_ico{
+                background: none;
+                color: #475669;
+        }
+        .m_ico p{
+            display: inline;
+        }
+        .el-button.is-circle {
+            border-radius: 65%;
+            padding: 1px;
+        }
+        .amap{
+            height: 440px;
+            margin-left: 0;
+            width: 600px;
+            background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat;
+            background-size: auto 100%;
+            position: relative;
+        }
+        .mapCur {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 180px;
+            right: 180px;
+            cursor: pointer;
+        }
+        .mapCur>span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 4px;
+            background: rgba(36,164,255,.2);
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .mapCur2>span{
+            background: rgba(255, 28, 67, 0.2);
+        }
+        .mapCur>span:before {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #24a4ff;
+    left: 10px;
+    top: 10px;
+    border-radius: 50%;
+    z-index: 19;
+        }
+        .mapCur2>span:before{
+            background: rgba(255, 28, 67,1);
+        }
+
+    .mapCurHover>span {
+        width: 28px;
+        height: 28px;
+        margin: 0;
+        z-index: 9;
+        background-image: linear-gradient(-225deg,#1ec6ff 1%,#21b5ff 36%,#2796ff);
+    }
+.mapCurHover>span:before {
+    background: #eeeaff;
+    z-index: 999;
+}
+
+
+
+        </style>
+    {% endblock %}
+
+
+    {% block content %}
+        {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+        <template>
+          <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+            <el-table-column
+              fixed
+              prop="times"
+              label="日期">
+            </el-table-column>
+
+            <el-table-column
+              prop="gp"
+              label="基金管理人(GP)">
+            </el-table-column>
+
+            <el-table-column
+              prop="phone"
+              label="联系电话">
+            </el-table-column>
+
+            <el-table-column
+              prop="username"
+              label="联系人">
+            </el-table-column>
+
+            <el-table-column
+              prop="base_name"
+              label="入驻小镇">
+            </el-table-column>
+
+            <el-table-column
+              prop="base_name"
+              label="标签">
+              <template slot-scope="scope">
+
+                  <el-tag type="success" v-if="scope.row.status != 0">已联系</el-tag>
+                  <el-tag type="danger" v-else>未联系</el-tag>
+
+              </template>
+            </el-table-column>
+
+
+
+            <el-table-column
+              fixed="right"
+              label="操作">
+              <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small" v-if="scope.row.status == 0">联系</el-button>
+                <el-button @click="handleClick(scope.row)" type="text" size="small" v-else>取消联系</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+    {% endblock %}
+
+
+
+    {% block footer %}
+
+    {% endblock %}
+
+
+
+
+    {% block js %}
+        <script>
+             var Main = {
+                 data() {
+                     return {
+                         indexs:'/application',
+                         tableData: [
+
+                             {% for i in submit %}
+                                {
+                                    uid:'{{ i.uid }}',
+                                    times:'{{ i.times }}',
+                                    gp:'{{ i.gp }}',
+                                    phone:'{{ i.phone }}',
+                                    username:'{{ i.username }}',
+                                    base_name:'{{ i.base_name }}',
+                                    status:'{{ i.status }}',
+                                },
+                             {% endfor %}
+
+                         ],
+
+
+                     }
+                 },
+                 methods: {
+                          handleSelect(key, keyPath) {
+                            console.log(key, keyPath);
+                            window.open(key, "_self");
+                          },
+                          handleClick(key){
+                              console.log(key);
+                              _this=this;
+                              axios.post('{{ url_for('admins.applications') }}', key)
+                                  .then(function (response) {
+                                      if(response){
+                                          response=response.data;
+                                          _this.$message({
+                                            message: '修改成功',
+                                            type: 'success'
+                                          });
+                                          if(key.status==0){
+                                              key.status=1;
+                                          }else{
+                                              key.status=0;
+                                          }
+                                      }else{
+                                          _this.$message({
+                                            message: '修改失败',
+                                            type: 'warning'
+                                          });
+                                      }
+                                  })
+                                  .catch(function (error) {
+                                    console.log(response);
+                                    _this.$message.error({
+                                            message: '添加出错，请联系程序员',
+                                          });
+                                  });
+                          }
+                 },
+             }
+             var Ctor = Vue.extend(Main)
+             new Ctor().$mount('#app')
+        </script>
+    {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

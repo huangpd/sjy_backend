@@ -1,0 +1,341 @@
+{% extends 'models1.html' %}
+    {% block title %}设基院{% endblock %}
+    {% block head_css %}
+        <style>
+          .el-carousel__item .el-col {
+              color: #475669;
+              font-size: 18px;
+              opacity: 0.75;
+              line-height: 300px;
+              margin: 0;
+          }
+
+          .el-carousel__item:nth-child(2n) {
+            background-color: #99a9bf;
+          }
+
+          .el-carousel__item:nth-child(2n+1) {
+            background-color: #d3dce6;
+          }
+        .el-row {
+            margin-bottom: 20px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          .el-col {
+            border-radius: 4px;
+          }
+          .bg-purple-dark {
+            background: #99a9bf;
+          }
+
+          .bg-purple-light {
+            background: #e5e9f2;
+          }
+          .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+          }
+          .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+          }
+        .grid-content{
+            text-align: center;
+            padding-top: 40px;
+        }
+        .grid-content i{
+            font-size:50px;
+        }
+        .grid-content span{
+            font-weight: 700;
+            margin-top: 10px;
+            display: block;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .grid-content p{
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+        .grid-content a{
+            color: #475669;
+        }
+        .amap{
+            height: 400px;
+            margin-left: 0;
+            width: 600px;
+            background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat;
+            background-size: auto 100%;
+            position: relative;
+        }
+        .mapCur {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 180px;
+            right: 180px;
+            cursor: pointer;
+        }
+        .mapCur>span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 4px;
+            background: rgba(36,164,255,.2);
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .mapCur>span:before {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #24a4ff;
+    left: 10px;
+    top: 10px;
+    border-radius: 50%;
+    z-index: 19;
+}
+        .el-tab-pane p{
+            font-size: 14px;
+            color: #475669;
+        }
+        .el-tab-pane h3{
+            color: #24a4ff;
+            font-weight: 700;
+        }
+          .el-row {
+            margin-bottom: 0;
+                 }
+        .footersnub{
+            margin-bottom: 60px
+        }
+
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+        a{
+            text-decoration:none;
+        }
+
+.mapCurHover>span {
+        width: 28px;
+        height: 28px;
+        margin: 0;
+        z-index: 9;
+        background-image: linear-gradient(-225deg,#1ec6ff 1%,#21b5ff 36%,#2796ff);
+    }
+.mapCurHover>span:before {
+    background: #eeeaff;
+    z-index: 999;
+}
+
+
+        </style>
+    {% endblock %}
+
+    {% block content %}
+        <div id="app">
+
+            <el-row>
+                {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+
+            </el-row>
+
+
+
+            <el-row>
+              <el-col :span="24">
+                  <div class="grid-content">
+                      <h1>
+                            设基院私募孵化基地 申请入驻
+                      </h1>
+                      <p>
+                          税收优惠政策/精准对接政府资源/拎包入驻办公
+                      </p>
+                  </div>
+              </el-col>
+            </el-row>
+
+            <el-row type="flex"  justify="center" class="footersnub">
+              <el-col :span="8">
+                  <div class="grid-content bg-purple-light amap">
+
+
+
+                      <div v-for="ii in map"  class="mapCur mapCurHover"  :style="ii.XY" v-if="ii.id == region_id">
+                          <el-tooltip class="item" effect="dark" :content="ii.region" placement="right" value="true">
+                              <span @click="sjybase(ii.uid,ii.id)" ></span>
+                          </el-tooltip>
+                      </div>
+
+                      <div v-for="ii in map"  class="mapCur"  :style="ii.XY" v-if="ii.id != region_id">
+                          <el-tooltip class="item" effect="dark" :content="ii.region" placement="right">
+                              <span @click="sjybase(ii.uid,ii.id)" ></span>
+                          </el-tooltip>
+                      </div>
+
+
+                  </div>
+              </el-col>
+              <el-col :span="5" style="margin-top: 40px;">
+                <el-card class="box-card" style="padding-top: 20px">
+                    <el-form ref="form" :model="form" label-width="150px">
+                      <el-form-item label="基金管理人(GP)">
+                        <el-input v-model="form.GP"></el-input>
+                      </el-form-item>
+
+                        <el-form-item label="联系电话：">
+                        <el-input v-model="form.phone"></el-input>
+                      </el-form-item>
+
+                        <el-form-item label="联系人：">
+                        <el-input v-model="form.username"></el-input>
+                      </el-form-item>
+                      <el-form-item label="入驻小镇：">
+                        <el-select v-model="form.base" placeholder="请选择入驻小镇">
+                          <el-option :label="i.name" :value="i.uid" v-for="i in base"></el-option>
+                        </el-select>
+                      </el-form-item>
+
+                      <el-form-item>
+                        <el-button type="primary" @click="onSubmit">提交申请</el-button>
+                        <el-button>取消</el-button>
+                      </el-form-item>
+                    </el-form>
+                </el-card>
+
+
+              </el-col>
+            </el-row>
+
+
+
+
+
+        {% endblock %}
+
+        {% block footer %}
+            {{ super() }}   {#继承原来模板信息 既 末尾栏#}
+        {% endblock %}
+    </div>
+
+
+    {% block js %}
+
+        <script src="https://unpkg.com/vue-amap/dist/index.js"></script>
+
+        <script>
+         var Main = {
+            data() {
+              return {
+                  form: {
+                      GP: '',
+                      phone: '',
+                      username: '',
+                      base: '',
+                  },
+                  region_id:1,
+                  base:[
+
+                      {% for i in base %}
+                                {
+                                    id:'{{ i.id }}',
+                                    uid:'{{ i.uid }}',
+                                    name:'{{ i.name }}',
+                                    text:'{{ i.text }}',
+                                    h3:'{{ i.h3 }}',
+                                    a:'{{ i.a }}',
+                                },
+                      {% endfor %}
+                  ],
+                  map: [
+                             {% for i in region %}
+                                {
+                                    id:'{{ i.id }}',
+                                    uid:'{{ i.uid }}',
+                                    XY:'{{ i.xy }}',
+                                    region:'{{ i.region }}',
+                                },
+                             {% endfor %}
+                        ],
+                   p:[
+                             {% for i in base %}
+                                {
+
+                                    id:'{{ i.region_id }}',
+                                    name:'{{ i.name }}',
+                                    text:'{{ i.text }}',
+                                    h3:'{{ i.h3 }}',
+                                    a:'{{ i.a }}',
+                                },
+                             {% endfor %}
+                   ],
+
+              }
+            },
+            methods: {
+              handleSelect(key) {
+                  console.log(key);
+                  window.open(key, "_self");
+              },
+              sjybase(key,id){
+                  _this= this;
+
+                  console.log();
+                  data={uid:key};
+                  axios.post('{{ url_for('web.ingexbase') }}',data)
+                                  .then(function (u) {
+                                      _this.region_id = id;
+                                      console.log(u);
+                                  });
+
+              },
+              login(){
+                  _this = this;
+                  window.open('/submit/', "_self");
+              },
+                onSubmit(){
+                  _this=this;
+                             axios.post('{{ url_for('web.information') }}', _this.form)
+                                  .then(function (response) {
+                                      if(response){
+                                          _this.$message({
+                                            message: '申请添加成功',
+                                            type: 'success'
+                                          });
+                                      }else{
+                                          _this.$message({
+                                            message: '申请添加失败',
+                                            type: 'warning'
+                                          });
+                                      }
+                                  })
+                                  .catch(function (error) {
+                                    _this.$message.error({
+                                            message: '添加出错，请联系程序员',
+                                          });
+                                  });
+                }
+            },
+
+          }
+
+            var Ctor = Vue.extend(Main)
+            new Ctor().$mount('#app')
+        </script>
+
+
+
+    {% endblock %}

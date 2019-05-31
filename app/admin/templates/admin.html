@@ -1,0 +1,684 @@
+{% extends 'models.html' %}
+{% block title %}
+    设基院后台
+{% endblock %}
+
+{% block head_css %}
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        &:last-child {
+             margin-bottom: 0;
+         }
+        }
+        .el-col {
+            border-radius: 4px;
+        }
+        .bg-purple-dark {
+            background: #99a9bf;
+        }
+        .bg-purple {
+            background: #d3dce6;
+        }
+        .bg-purple-light {
+            background: #e5e9f2;
+        }
+        .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+        }
+        .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+        }
+        .el-row{
+            padding-left: 20px;
+        }
+        .m_ico a{
+            text-decoration: none;
+            color: #475669;
+        }.m_ico{
+             background: none;
+             color: #475669;
+         }
+        .m_ico p{
+            display: inline;
+        }
+        .el-button.is-circle {
+            border-radius: 65%;
+            padding: 1px;
+        }
+        .amap{
+            height: 440px;
+            margin-left: 3em;
+            width: 600px;
+            background: url(https://g.alicdn.com/aliyun/chuangke-lingxi-aliyun-loz/1.1.3/img/8b45811ef25aa0d71f28e15236c77479.png) no-repeat;
+            background-size: auto 100%;
+            position: relative;
+        }
+        .mapCur {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 180px;
+            right: 180px;
+            cursor: pointer;
+        }
+        .mapCur>span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 4px;
+            background: rgba(36,164,255,.2);
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .mapCur2>span{
+            background: rgba(255, 28, 67, 0.2);
+        }
+        .mapCur>span:before {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #24a4ff;
+            left: 10px;
+            top: 10px;
+            border-radius: 50%;
+            z-index: 19;
+        }
+        .mapCur2>span:before{
+            background: rgba(255, 28, 67,1);
+        }
+
+        .mapCurHover>span {
+            width: 28px;
+            height: 28px;
+            margin: 0;
+            z-index: 9;
+            background-image: linear-gradient(-225deg,#1ec6ff 1%,#21b5ff 36%,#2796ff);
+        }
+        .mapCurHover>span:before {
+            background: #eeeaff;
+            z-index: 999;
+        }
+
+
+
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    {{ super() }}   {#继承原来模板信息 既 菜单栏#}
+
+    <el-row type="flex" class="row-bg">
+        <el-col :span="12">
+            <h3>首图上传</h3>
+            <el-upload
+                    class="upload-demo"
+                    action="{{ url_for('admins.adminimgs') }}"
+
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    :on-success="handleSuccess"
+                    :file-list="fileList"
+                    list-type="picture">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+
+        </el-col>
+    </el-row>
+
+    <el-row type="flex" class="row-bg">
+        <el-col :span="12">
+            <h3>板块添加</h3>
+            <el-form ref="form" :model="form1" label-width="80px">
+
+                <el-form-item label="图标选择">
+
+                    <el-select v-model="form1.ico" placeholder="请选择活动区域" @change="icou">
+                        <el-option :label="i" :value="i" v-for="i in icos"><i :class="i"></i></el-option>
+                    </el-select>
+
+                    <i :class="ico2"></i>
+                </el-form-item>
+
+
+                <el-form-item label="板块名称">
+                    <el-input v-model="form1.name"></el-input>
+                </el-form-item>
+
+                <el-form-item label="板块详解">
+                    <el-input v-model="form1.text"></el-input>
+                </el-form-item>
+
+                <el-form-item label="跳转页面">
+                    <el-input v-model="form1.url"></el-input>
+                </el-form-item>
+
+
+                <el-form-item>
+                    <el-button type="primary" @click="onico">立即创建</el-button>
+                    <el-button>取消</el-button>
+                </el-form-item>
+            </el-form>
+
+        </el-col>
+
+
+        <el-col :span="12">
+
+            <el-col :span="24" v-for="i in icon">
+                <div class="grid-content bg-purple m_ico">
+                    <a :href="i.url">
+                        <i :class="i.ico"></i>
+                        <span>{{i.title}}</span>
+                        <p> | {{i.text}}</p>
+                    </a>
+                    <el-button type="danger" icon="el-icon-close" circle @click="icoend(i.id)"></el-button>
+                </div>
+
+            </el-col>
+
+        </el-col>
+    </el-row>
+
+    <el-row type="flex" class="row-bg">
+        <el-col :span="12">
+            <h3>基地添加</h3>
+            <el-form ref="form" :model="form2" label-width="80px">
+
+
+                <el-form-item label="XY">
+                    <el-input v-model="form2.XY"></el-input>
+                </el-form-item>
+
+                <el-form-item label="区域">
+                    <el-input v-model="form2.add"></el-input>
+                </el-form-item>
+                <el-form-item label="基地" v-for="i in form2.data">
+
+                    <el-form-item label="标签名称">
+                        <el-input v-model="i.name"></el-input>
+                    </el-form-item>
+                    <div style="margin: 5px 0;"></div>
+
+                    <el-form-item label="H3">
+                        <el-input v-model="i.h3"></el-input>
+                    </el-form-item>
+                    <div style="margin: 5px 0;"></div>
+
+                    <el-form-item label="跳转地址">
+                        <el-input v-model="i.a"></el-input>
+                    </el-form-item>
+
+                    <div style="margin: 5px 0;"></div>
+                    <el-form-item label="标签内容">
+                        <el-input v-model="i.text"></el-input>
+                    </el-form-item>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" round @click="adds">添加基地</el-button>
+                    <br/>
+                    <br/>
+                    <el-button type="primary" @click="addins">添加坐标</el-button>
+                    <el-button>取消</el-button>
+
+
+                    <el-button type="warning" @click="coordinate_v">修改坐标：{{coordinate_name}}</el-button>
+                    <el-button type="danger" @click="coordinate_d">删除坐标：{{coordinate_name}}</el-button>
+
+                </el-form-item>
+            </el-form>
+
+        </el-col>
+
+
+        <el-col :span="12">
+
+            <el-col :span="16">
+                <div class="grid-content bg-purple-light amap">
+
+
+
+                    <div v-for="ii in map"  class="mapCur"  :style="ii.XY" >
+                        <el-tooltip class="item" effect="dark" :content="ii.region" placement="right">
+                            <span @click="block(ii.uid,ii.region)" ></span>
+                        </el-tooltip>
+                    </div>
+
+                    <div  class="mapCur mapCur2"  :style="form2.XY">
+                        <el-tooltip class="item" effect="dark" content="显示" placement="right">
+                            <span @click="" ></span>
+                        </el-tooltip>
+                    </div>
+                </div>
+            </el-col>
+
+
+        </el-col>
+    </el-row>
+    <el-row type="flex" class="row-bg">
+        <el-col :span="12">
+            <h3>设计院分布图</h3>
+            <el-upload
+                    class="upload-demo"
+                    action="{{ url_for('admins.sjyimgs') }}"
+                    :before-remove="sjydefore"
+                    :on-success="sjysuccess"
+                    :file-list="sjyimgs"
+                    list-type="picture">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+
+        </el-col>
+    </el-row>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        var Main = {
+            data() {
+                return {
+                    indexs:'/admin/',
+
+                    region_id:1,
+                    ico2:'',
+                    coordinate_name:'无',
+                    coordinate_uid:'',
+
+                    fileList: [
+
+                        {% for i in adminimg %}
+                            {
+                                uid:'{{ i.uid }}',
+                                name:'{{ i.name }}',
+                                url:'{{ i.url }}',
+                            },
+                        {% endfor %}
+
+                    ],
+
+                    sjyimgs: [
+
+                        {% for i in sjyimgs %}
+                            {
+                                uid:'{{ i.uid }}',
+                                name:'{{ i.name }}',
+                                url:'{{ i.url }}',
+                            },
+                        {% endfor %}
+
+                    ],
+
+                    icos:['el-icon-info','el-icon-error','el-icon-success','el-icon-warning','el-icon-question','el-icon-back','el-icon-arrow-left','el-icon-arrow-down','el-icon-arrow-right','el-icon-arrow-up','el-icon-caret-left','el-icon-caret-bottom','el-icon-caret-top','el-icon-caret-right','el-icon-d-arrow-left','el-icon-d-arrow-right',
+                        'el-icon-minus','el-icon-plus','el-icon-remove','el-icon-circle-plus','el-icon-remove-outline','el-icon-circle-plus-outline','el-icon-close','el-icon-check','el-icon-circle-close','el-icon-circle-check','el-icon-circle-close-outline','el-icon-circle-check-outline','el-icon-zoom-out','el-icon-zoom-in','el-icon-d-caret','el-icon-sort','el-icon-sort-down','el-icon-sort-up','el-icon-tickets','el-icon-document','el-icon-goods','el-icon-sold-out','el-icon-news','el-icon-message','el-icon-date','el-icon-printer','el-icon-time','el-icon-bell','el-icon-mobile-phone','el-icon-service','el-icon-view','el-icon-menu','el-icon-more','el-icon-more-outline','el-icon-star-on','el-icon-star-off','el-icon-location','el-icon-location-outline','el-icon-phone','el-icon-phone-outline','el-icon-picture','el-icon-picture-outline','el-icon-delete','el-icon-search','el-icon-edit','el-icon-edit-outline','el-icon-rank','el-icon-refresh','el-icon-share','el-icon-setting','el-icon-upload','el-icon-upload2','el-icon-download','el-icon-loading'],
+                    form1: {
+                        ico: '',
+                        name: '',
+                        text: '',
+                        url: '',
+                    },
+                    form2: {
+                        id:'',
+                        XY: 'left:0px;top:0px;',
+                        add: '',
+                        data: [
+                            {name:'',text:'',a:'',h3:''},
+                        ],
+                    },
+
+                    map: [
+                        {% for i in region %}
+                            {
+
+                                uid:'{{ i.uid }}',
+                                id:'{{ i.id }}',
+                                XY:'{{ i.xy }}',
+                                region:'{{ i.region }}',
+                            },
+                        {% endfor %}
+                    ],
+                    p:[
+                        {% for i in base %}
+                            {
+
+                                id:'{{ i.region_id }}',
+                                name:'{{ i.name }}',
+                                text:'{{ i.text  | replace('/n','') }}',
+                            },
+                        {% endfor %}
+                    ],
+
+                    icon:[
+                        {% for i in plateico %}
+                            {
+                                id:'{{ i.id }}',
+                                title:'{{ i.name }}',
+                                text:'{{ i.text }}',
+                                ico:'{{ i.ico }}',
+                                url:'{{ i.url }}',
+                            },
+                        {% endfor %}
+                    ],
+                }
+            },
+            methods: {
+
+
+                block(uid,region){
+                    _this = this;
+                    console.log(uid,region);
+                    _this.coordinate_name = region;
+                    var data={
+                        'uid':uid
+                    };
+
+                    axios.post('{{ url_for('admins.coordinates') }}', data)
+                        .then(function (response) {
+                            if(response){
+                                response = response.data;
+                                region=response.region;
+                                _this.form2.uid =region.uid;
+                                _this.form2.XY =region.xy;
+                                _this.form2.add =region.region;
+                                bases = response.base;
+                                _this.form2.data =bases;
+                                console.log(response);
+                            }else{
+                                _this.$message({
+                                    message: '失败',
+                                    type: 'warning'
+                                });
+                            }
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '添加出错，请联系程序员',
+                            });
+                        });
+                },
+
+                icou(value){
+                    this.ico2=value
+                },
+                onico(){
+                    _this=this;
+
+                    axios.post('{{ url_for('admins.platein') }}', _this.form1)
+                        .then(function (response) {
+                            if(response){
+                                response=response.data;
+                                _this.$message({
+                                    message: '板块添加成功',
+                                    type: 'success'
+                                });
+                                var y=_this.icon;
+                                console.log(response);
+                                var data = {'id':response.id,'title':response.name,'text':response.text,'ico':response.ico,'url':response.url,}
+                                y.push(data)
+                            }else{
+                                _this.$message({
+                                    message: '板块添加失败',
+                                    type: 'warning'
+                                });
+                            }
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '添加出错，请联系程序员',
+                            });
+                        });
+
+                },
+                {#删除标签#}
+                icoend(key) {
+                    _this=this
+                    var y=_this.icon;
+                    var data = {'id':key};
+                    axios.post('{{ url_for('admins.platedelete') }}', data)
+                        .then(function (response) {
+                            response=response.data;
+                            _this.$message({
+                                message: '板块删除成功',
+                                type: 'success'
+                            });
+                            for(i in y){
+                                if(y[i].id==key){
+                                    y.splice(i,1);
+                                }
+                            }
+                            this.icon=y
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '删除出错，请联系程序员',
+                            });
+                        });
+                },
+
+
+
+                adds(){
+                    var datas ={name:'',text:'',a:'',h3:''};
+                    this.form2.data.push(datas);
+                },
+
+
+
+                addins(){
+                    _this=this;
+                    axios.post('{{ url_for('admins.base') }}', _this.form2)
+                        .then(function (response) {
+                            _this.$message({
+                                message: '小镇添加成功',
+                                type: 'success'
+                            });
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '删除出错，请联系程序员',
+                            });
+                        });
+                },
+
+                coordinate_v(){
+                    _this=this;
+                    axios.post('{{ url_for('admins.base_v') }}', _this.form2)
+                        .then(function (response) {
+                            _this.$message({
+                                message: '修改成功',
+                                type: 'success'
+                            });
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '删除出错，请联系程序员',
+                            });
+                        });
+                },
+                coordinate_d(){
+                    _this=this;
+                    axios.post('{{ url_for('admins.base_d') }}', _this.form2)
+                        .then(function (response) {
+                            _this.$message({
+                                message: '修改成功',
+                                type: 'success'
+                            });
+                        })
+                        .catch(function (error) {
+                            _this.$message.error({
+                                message: '删除出错，请联系程序员',
+                            });
+                        });
+                },
+
+
+
+                handleRemove(file) {
+
+                },
+
+
+
+
+
+
+                {#首图操作#}
+                handleSuccess(response, file, fileList){
+                    file.uid=response;
+                    {#文件回调#}
+                },
+                handlePreview(response,){
+                    _this = this;
+                    console.log(response.uid);
+
+                    _this.$prompt('请输入跳转页面地址，格式：/xxxxx', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                    }).then(({ value }) => {
+                        console.log(value);
+
+                        var data = {uid:response.uid,a:value};
+                        axios.post('{{ url_for('admins.adminimgll') }}', data)
+                            .then(function (response) {
+                                if(response.data.message == 1){
+                                    _this.$message({
+                                        message: '修改成功',
+                                        type: 'success'
+                                    });
+                                }else{
+                                    _this.$message({
+                                        message: '修改失败',
+                                        type: 'warning'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                _this.$message.error({
+                                    message: '添加出错，请联系程序员',
+                                });
+                            });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消输入'
+                        });
+                    });
+
+
+
+                },
+                beforeRemove(file) {
+                    _this = this;
+                    return _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('{{ url_for('admins.adminimgdelete') }}', file)
+                            .then(function (response) {
+                                if(response.data.message == 1){
+                                    _this.$message({
+                                        message: '删除成功',
+                                        type: 'success'
+                                    });
+                                }else{
+                                    _this.$message({
+                                        message: '删除失败',
+                                        type: 'warning'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                _this.$message.error({
+                                    message: '添加出错，请联系程序员',
+                                });
+                            });
+
+
+                    })
+                },
+                {#首图操作#}
+
+
+
+
+
+                {#设基院分布图#}
+                sjysuccess(response, file, fileList){
+                    file.uid=response;
+                    {#文件回调#}
+                },
+                sjydefore(file) {
+                    _this = this;
+                    return _this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post('{{ url_for('admins.sjyimgdelete') }}', file)
+                            .then(function (response) {
+                                if(response.data.message == 1){
+                                    _this.$message({
+                                        message: '删除成功',
+                                        type: 'success'
+                                    });
+                                }else{
+                                    _this.$message({
+                                        message: '删除失败',
+                                        type: 'warning'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                _this.$message.error({
+                                    message: '添加出错，请联系程序员',
+                                });
+                            });
+
+
+                    })
+                },
+                {#设基院分布图#}
+
+
+                handleSelect(key, keyPath) {
+                    console.log(key, keyPath);
+                    window.open(key, "_self");
+                }
+            },
+        }
+        var Ctor = Vue.extend(Main)
+        new Ctor().$mount('#app')
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
