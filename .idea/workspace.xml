@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a5fcb60b-9f90-43a5-ad83-11fcdc842029" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="a5fcb60b-9f90-43a5-ad83-11fcdc842029" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +36,15 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="72">
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/townss/api.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -58,15 +63,6 @@
                 <element signature="e#11844#13596#0" />
                 <element signature="e#13709#13869#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
             </state>
           </provider>
         </entry>
@@ -139,8 +135,8 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="440" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="260" />
     <option name="y" value="44" />
     <option name="width" value="1774" />
     <option name="height" value="955" />
@@ -355,12 +351,12 @@
       <workItem from="1558917193296" duration="22948000" />
       <workItem from="1559089963732" duration="21111000" />
       <workItem from="1559175562577" duration="9495000" />
-      <workItem from="1559263569921" duration="493000" />
+      <workItem from="1559263569921" duration="630000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="101904000" />
+    <option name="totallyTimeSpent" value="102041000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -372,8 +368,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="440" y="44" width="1774" height="955" extended-state="0" />
-    <editor active="true" />
+    <frame x="260" y="44" width="1774" height="955" extended-state="0" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4994206" visible="true" weight="0.16281755" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -730,13 +725,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/townss/api.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="766">
@@ -754,6 +742,13 @@
             <element signature="e#11844#13596#0" />
             <element signature="e#13709#13869#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
