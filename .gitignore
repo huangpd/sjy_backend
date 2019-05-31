@@ -1,0 +1,4 @@
+/dist
+/venv
+/myvue/node_modules
+.DS_Store
