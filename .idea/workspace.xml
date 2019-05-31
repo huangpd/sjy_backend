@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a5fcb60b-9f90-43a5-ad83-11fcdc842029" name="Default Changelist" comment="" />
+    <list default="true" id="a5fcb60b-9f90-43a5-ad83-11fcdc842029" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/app/.idea/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/GetOpExceptionApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/GetOpExceptionApi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/QichachaApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/QichachaApi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/static/temp/qDaJPo8EKdmqa3t.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/townss/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/townss/api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/css/app.511fa84a.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/js/app.bbd5ed22.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/js/app.bbd5ed22.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/src/utils/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/src/utils/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/src/utils/companyDetails_data.js" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/src/utils/companyDetails_data.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/src/views/CompanyDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/src/views/CompanyDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myvue/src/views/TownCompany.vue" beforeDir="false" afterPath="$PROJECT_DIR$/myvue/src/views/TownCompany.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/indexs.html" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,38 +50,28 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="126">
+              <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/townss/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="766">
-              <caret line="410" column="36" selection-start-line="410" selection-start-column="36" selection-end-line="410" selection-end-column="36" />
+            <state relative-caret-position="341">
+              <caret line="606" column="52" selection-start-line="606" selection-start-column="52" selection-end-line="606" selection-end-column="52" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
-                <element signature="e#3666#6104#0" />
-                <element signature="e#6175#8749#0" />
-                <element signature="e#8778#8918#0" />
-                <element signature="e#9006#9352#0" />
-                <element signature="e#9438#10535#0" />
-                <element signature="e#10627#10846#0" />
-                <element signature="e#10884#11188#0" />
-                <element signature="e#11239#11748#0" />
-                <element signature="e#11844#13596#0" />
-                <element signature="e#13709#13869#0" />
+                <element signature="e#10629#10928#0" />
+                <element signature="e#11019#11238#0" />
+                <element signature="e#11276#11580#0" />
+                <element signature="e#11631#12140#0" />
+                <element signature="e#12236#13988#0" />
+                <element signature="e#14101#14261#0" />
+                <element signature="e#14345#15778#0" />
+                <element signature="e#15882#19762#0" />
+                <element signature="e#20770#21759#0" />
               </folding>
             </state>
           </provider>
@@ -127,17 +137,17 @@
         <option value="$PROJECT_DIR$/app/models/admin.py" />
         <option value="$PROJECT_DIR$/app/tools/datetime_to_json.py" />
         <option value="$PROJECT_DIR$/app/tools/FileExport.py" />
-        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/app/tools/amac_crawl/libs/models.py" />
-        <option value="$PROJECT_DIR$/app/townss/api.py" />
         <option value="$PROJECT_DIR$/app/secure.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/app.py" />
+        <option value="$PROJECT_DIR$/app/townss/api.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="260" />
-    <option name="y" value="44" />
+    <option name="x" value="87" />
+    <option name="y" value="29" />
     <option name="width" value="1774" />
     <option name="height" value="955" />
   </component>
@@ -147,6 +157,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -163,7 +174,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -351,12 +361,13 @@
       <workItem from="1558917193296" duration="22948000" />
       <workItem from="1559089963732" duration="21111000" />
       <workItem from="1559175562577" duration="9495000" />
-      <workItem from="1559263569921" duration="630000" />
+      <workItem from="1559263569921" duration="4796000" />
+      <workItem from="1559289431576" duration="5043000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="102041000" />
+    <option name="totallyTimeSpent" value="111250000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -368,14 +379,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="260" y="44" width="1774" height="955" extended-state="0" />
+    <frame x="87" y="29" width="1774" height="955" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4994206" visible="true" weight="0.16281755" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4994206" visible="true" weight="0.16454965" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.50057936" side_tool="true" weight="0.16108546" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32908458" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.30938587" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.30938587" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39976826" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -401,24 +413,11 @@
     <SUITE FILE_PATH="coverage/global_xiaozhen$test.coverage" NAME="test Coverage Results" MODIFIED="1558921760163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/global_xiaozhen$models.coverage" NAME="models Coverage Results" MODIFIED="1559112192034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/tools/amac_crawl/libs" />
     <SUITE FILE_PATH="coverage/global_xiaozhen$multi_product_run.coverage" NAME="multi_product_run Coverage Results" MODIFIED="1558937965331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/tools/amac_crawl" />
-    <SUITE FILE_PATH="coverage/global_xiaozhen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1559212838463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/global_xiaozhen$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1559297022688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/global_xiaozhen$multi_manager_run.coverage" NAME="multi_manager_run Coverage Results" MODIFIED="1558940163252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/tools/amac_crawl" />
     <SUITE FILE_PATH="coverage/global_xiaozhen$manager_xpath_crawl.coverage" NAME="manager_xpath_crawl Coverage Results" MODIFIED="1558940790501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/tools/amac_crawl" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/myvue/src/router.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="22" column="5" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myvue/src/shims-tsx.d.ts">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/myvue/src/shims-vue.d.ts">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -725,37 +724,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/townss/api.py">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="766">
-          <caret line="410" column="36" selection-start-line="410" selection-start-column="36" selection-end-line="410" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <element signature="e#3666#6104#0" />
-            <element signature="e#6175#8749#0" />
-            <element signature="e#8778#8918#0" />
-            <element signature="e#9006#9352#0" />
-            <element signature="e#9438#10535#0" />
-            <element signature="e#10627#10846#0" />
-            <element signature="e#10884#11188#0" />
-            <element signature="e#11239#11748#0" />
-            <element signature="e#11844#13596#0" />
-            <element signature="e#13709#13869#0" />
-          </folding>
+        <state relative-caret-position="54">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/indexs.html" />
+    <entry file="file://$PROJECT_DIR$/app/web/templates/indexs.html">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        <state relative-caret-position="126">
+          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/app/townss/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+        <state relative-caret-position="341">
+          <caret line="606" column="52" selection-start-line="606" selection-start-column="52" selection-end-line="606" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#10629#10928#0" />
+            <element signature="e#11019#11238#0" />
+            <element signature="e#11276#11580#0" />
+            <element signature="e#11631#12140#0" />
+            <element signature="e#12236#13988#0" />
+            <element signature="e#14101#14261#0" />
+            <element signature="e#14345#15778#0" />
+            <element signature="e#15882#19762#0" />
+            <element signature="e#20770#21759#0" />
+          </folding>
         </state>
       </provider>
     </entry>

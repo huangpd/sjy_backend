@@ -16,8 +16,8 @@ from app.models.GetOpExceptionApi import GetOpException
 from app.models.admin import db, Town, Company, RefreshTime, CompanyAbnormal, CompanyCourtNotice, CompanySearchShiXin
 from app.models.QichachaApi import Qichacha
 from app.tools.FileExport import excel
-from secure import mondb
-from tools.datetime_to_json import DateEncoder
+from app.secure import mondb
+from app.tools.datetime_to_json import DateEncoder
 from . import townss
 from sqlalchemy import extract, and_, or_
 
@@ -295,6 +295,20 @@ def company_amend():
             return data, 200, {"ContentType": "application/json"}
 
 
+# 查询公司
+@townss.route('/company_query/', methods=['POST'])
+def company_query():
+    if request.method == 'POST':
+        com_id = request.form['id']
+        company = db.session.query(Company).filter(Company.id == com_id).first()
+        data = {'Name': company.company_name, 'OperName': company.OperName, 'StartDate': company.StartDate,
+                'Status': company.Status, 'Code': company.company_uid,
+                'RegistCapi': company.RegistCapi, 'EconKind': company.EconKind,
+                'Address': company.Address, 'Scope': company.Scope, }
+        data = json.dumps(data, cls=DateEncoder)
+        return data, 200, {"ContentType": "application/json"}
+
+
 # 加载所有公司
 @townss.route('/company_message/', methods=['POST'])
 def company_message():
@@ -529,10 +543,10 @@ def company_risks():
         d2 = datetime(date2[0], date2[1], date2[2])
         delta = d2 - d1
         delta = delta.days
-        if delta >= 7:
-            refreshtime.times = time.strftime('%Y-%m-%d', date2)
-            db.session.commit()
-            company_risk_update()
+        # if delta >= 7:
+        refreshtime.times = time.strftime('%Y-%m-%d', date2)
+        db.session.commit()
+        company_risk_update()
 
         company_list = db.session.query(Company).limit(2).all()
         m = company_risks_v(company_list)
@@ -583,7 +597,6 @@ def company_risk_update():
     ccn = db.session.query(CompanyCourtNotice).all()  # 查询开庭公告
     cssx = db.session.query(CompanySearchShiXin).all()  # 失信被执行人信息
     company_list = db.session.query(Company).limit(10)  # 公司列表
-
     for i in company_list:  # 遍历每个公司
         g_list_v = GetOpException.get_details_by_name(i.company_uid)  # 每个公司获企查查 异常列表
         if g_list_v['Status'] == 200:

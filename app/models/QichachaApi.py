@@ -9,7 +9,7 @@ class Qichacha:
     def get_details_by_name(cls, keyword):
         url = cls.url.format(keyword)
         r = requests.get(url, headers=Api.get_headers(cls.key, cls.screat_key))
-        if r.status_code ==200:
+        if r.status_code == 200:
             return r.json()
         else:
             return {}

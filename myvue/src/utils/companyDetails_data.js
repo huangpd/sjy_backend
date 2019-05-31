@@ -7,116 +7,134 @@ export default {
   is_amac_product: false,
   has_amac_info: false,
   amac_label: '',
-  full_name: '这是导入的公司名称',
+
   firm_id: '',
   full_data: {},
-  partner_list: [],
-  change_list: [],
-  exception_list: [],
-  tax_list: [],
-  partner_col_list: [{
+
+  /** 股东信息 */
+  shareholder_cols: [{
     title: '股东',
     key: 'StockName',
-    width: 200
+    width: 'auto'
   },
   {
     title: '类型',
     key: 'StockType',
-    width: 200
+    width: 'auto'
   },
   {
     title: '持股比例',
     key: 'StockPercent',
-    width: 200
+    width: 'auto'
   },
   {
     title: '认缴出资额(万元)',
     key: 'ShouldCapi',
-    width: 200
+    width: 'auto'
   },
   {
     title: '认缴出资日期',
     key: 'ShoudDate',
-    width: 200
+    width: 'auto'
   }
   ],
-  change_col_list: [{
+
+  /** 工商变更 */
+  businessChange_cols: [{
     title: '变更项目',
     key: 'ProjectName',
-    width: 200
+    width: 'auto'
   },
   {
     title: '变更日期',
     key: 'ChangeDate',
-    width: 200
+    width: 'auto'
   },
   {
     title: '变更前',
-    key: 'BeforeContent'
+    key: 'BeforeContent',
+    width: 'auto'
   },
   {
     title: '变更后',
-    key: 'AfterContent'
+    key: 'AfterContent',
+    width: 'auto'
   }
   ],
-  exception_col_list: [{
+
+  /** 异常列表 */
+  abnormalInfo_cols: [{
     title: '列入日期',
     key: 'AddDate',
-    width: 100
+    width: 'auto'
   },
   {
     title: '异常原因',
-    key: 'AddReason'
+    key: 'AddReason',
+    width: 'auto'
   },
   {
     title: '列入决策机构',
-    key: 'DecisionOffice'
+    key: 'DecisionOffice',
+    width: 'auto'
   },
   {
     title: '移出日期',
     key: 'RemoveDate',
-    width: 100
+    width: 'auto'
   },
   {
     title: '移出说明',
-    key: 'RomoveReason'
+    key: 'RomoveReason',
+    width: 'auto'
   },
   {
     title: '移出机构',
-    key: 'RemoveDecisionOffice'
+    key: 'RemoveDecisionOffice',
+    width: 'auto'
   }
   ],
-  gudong_label: (h) => {
-    return h('div', [
-      h('span', '股东信息'),
-      h('Badge', {
-        props: {
-          count: vue.partner_list.length,
-          type: 'primary'
-        }
-      })
-    ])
+
+  /** 法律诉讼 */
+  legalAction_cols: [{
+    title: '被执行人信息',
+    key: 'ExecutedPersonInfo',
+    width: 'auto'
   },
-  change_label: (h) => {
-    return h('div', [
-      h('span', '工商变更'),
-      h('Badge', {
-        props: {
-          count: vue.change_list.length,
-          type: 'primary'
-        }
-      })
-    ])
+  {
+    title: '失信被执行人',
+    key: 'ExecutedPerson',
+    width: 'auto'
   },
-  exception_label: (h) => {
-    return h('div', [
-      h('span', '异常记录'),
-      h('Badge', {
-        props: {
-          count: vue.exception_list.length,
-          type: 'primary'
-        }
-      })
-    ])
+  {
+    title: '裁判文书',
+    key: 'Referee',
+    width: 'auto'
+  },
+  {
+    title: '法院公告',
+    key: 'CourtNotice',
+    width: 'auto'
+  },
+  {
+    title: '开庭公告',
+    key: 'OpeningNotice',
+    width: 'auto'
+  },
+  {
+    title: '送达公告',
+    key: 'DeliveryAnnouncement',
+    width: 'auto'
+  },
+  {
+    title: '股权冻结',
+    key: 'EquityFreeze',
+    width: 'auto'
+  },
+  {
+    title: '立案信息',
+    key: 'FilingInfo',
+    width: 'auto'
   }
+  ]
 }

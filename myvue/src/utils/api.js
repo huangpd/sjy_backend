@@ -6,6 +6,7 @@ export default {
   town_add: '/town_add/',
   town_delete: '/town_delete/',
 
+  company_query: '/company_query',
   company_message: '/company_message/',
   company_message_v: '/company_message_v/',
   company_add: '/company_add/',

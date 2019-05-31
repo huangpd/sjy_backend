@@ -60,6 +60,7 @@
           <el-table-column fixed="right" label="操作" width="150">
             <template slot-scope="scope">
               <el-button
+                index="/Company_Details/"
                 @click.native.prevent="company_amend_details(scope.$index ,scope.row)"
                 type="text"
                 size="small"
@@ -116,7 +117,7 @@
 import http from "@/utils/http";
 import api from "@/utils/api";
 import jsonToExcel from "@/utils/jsonToExcel";
-
+import Bus from "@/assets/bus.js";
 import { regionDataPlus, CodeToText } from "element-china-area-data";
 
 export default {
@@ -385,7 +386,12 @@ export default {
 
     /**公司详情 */
     company_amend_details(index, row) {
-      this.$router.push({ path: "/Company_Details" });
+      this.$router.push({
+        name: "Company_Details",
+        params: {
+          id: row.id
+        }
+      });
     },
 
     /**修改公司提交 */

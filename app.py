@@ -1,5 +1,5 @@
+#! /usr/bin/env python
 from app import create_app
-
 
 __author__ = 'nb_info_tech'
 

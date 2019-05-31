@@ -10,7 +10,7 @@
                 <el-breadcrumb-item>
                   <a href="/town_company">企业列表</a>
                 </el-breadcrumb-item>
-                <el-breadcrumb-item>{{ this.company_name }}</el-breadcrumb-item>
+                <el-breadcrumb-item>{{ this.company_msg.name }}</el-breadcrumb-item>
               </el-breadcrumb>
             </el-col>
           </el-row>
@@ -22,25 +22,25 @@
                   <table class="ntable">
                     <tr>
                       <td class="tb">企业全称:</td>
-                      <td colspan="3">{{ fullname }}</td>
+                      <td colspan="3">{{ this.company_msg.name }}</td>
                     </tr>
                     <tr>
                       <td class="tb">企业类型:</td>
-                      <td>{{ this.company_name }}</td>
+                      <td>{{ this.company_msg.econKind }}</td>
                       <td class="tb">统一信用代码:</td>
-                      <td>{{ this.company_name }}</td>
+                      <td>{{ this.company_msg.code }}</td>
                     </tr>
                     <tr>
                       <td class="tb">注册资本:</td>
-                      <td>{{ this.company_name }}</td>
+                      <td>{{ this.company_msg.registCapi }}</td>
                       <td class="tb">实缴资本:</td>
                       <td>{{ this.company_name }}</td>
                     </tr>
                     <tr>
                       <td class="tb">联系人:</td>
-                      <td>{{ this.company_name }}</td>
+                      <td>{{ this.company_msg.username }}</td>
                       <td class="tb">联系电话:</td>
-                      <td>{{ this.company_name }}</td>
+                      <td>{{ this.company_msg.phone }}</td>
                     </tr>
                     <tr>
                       <td class="tb">邮箱:</td>
@@ -73,12 +73,60 @@
                   <div slot="label">
                     <span>工商信息</span>
                   </div>
+                  <table
+                    class="ntable"
+                    style="border-spacing: 0;border-collapse: collapse;width: 100%;
+                    margin: 0 auto;padding: 0;"
+                  >
+                    <tr>
+                      <td class="tb">经营状态:</td>
+                      <td>{{ this.company_msg.status }}</td>
+                      <td class="tb">注册资本:</td>
+                      <td>{{ this.company_msg.registCapi }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tb">法人代表:</td>
+                      <td colspan="3">{{ this.company_msg.operName }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tb">注册地址:</td>
+                      <td colspan="3">{{ this.company_msg.address }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tb">注册时间:</td>
+                      <td>{{ this.company_msg.startDate }}</td>
+                      <td class="tb">类型:</td>
+                      <td>{{ this.company_msg.econKind }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tb">经营范围:</td>
+                      <td colspan="3">{{ this.company_msg.scope }}</td>
+                    </tr>
+                  </table>
                 </el-tab-pane>
 
                 <el-tab-pane name="second">
                   <div slot="label">
                     <span>纳税情况</span>
                   </div>
+                  <table class="gridtable">
+                    <tr>
+                      <th>年度</th>
+                      <th>增值税(万元)</th>
+                      <th>企业所得税(万元)</th>
+                      <th>个税(万元)</th>
+                      <th>税收留存(万元)</th>
+                      <th>税收奖励(万元)</th>
+                    </tr>
+                    <tr v-for="v in tax_list" v-bind:key="v.id">
+                      <td v-text="v.year"></td>
+                      <td v-text="v.zengzhi_tax"></td>
+                      <td v-text="v.company_tax"></td>
+                      <td v-text="v.personal_tax"></td>
+                      <td v-text="v.total_tax"></td>
+                      <td v-text="v.bonus_tax"></td>
+                    </tr>
+                  </table>
                 </el-tab-pane>
 
                 <el-tab-pane>
@@ -91,6 +139,17 @@
                       type="primary"
                     />
                   </div>
+
+                  <el-table border :data="this.shareholderInfo_list" style="width: 100%">
+                    <el-table-column
+                      v-for="col in this.shareholderInfo_cols"
+                      stripe
+                      :prop="col.key"
+                      :label="col.title"
+                      :width="col.width"
+                      :key="col.id"
+                    ></el-table-column>
+                  </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane name="fourth">
@@ -103,6 +162,17 @@
                       type="primary"
                     />
                   </div>
+
+                  <el-table border :data="this.businessChange_list" style="width: 100%">
+                    <el-table-column
+                      v-for="col in this.businessChange_cols"
+                      stripe
+                      :prop="col.key"
+                      :label="col.title"
+                      :width="col.width"
+                      :key="col.id"
+                    ></el-table-column>
+                  </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane name="fifth">
@@ -115,6 +185,17 @@
                       type="primary"
                     />
                   </div>
+
+                  <el-table border :data="this.abnormalInfo_list" style="width: 100%">
+                    <el-table-column
+                      v-for="col in this.abnormalInfo_cols"
+                      stripe
+                      :prop="col.key"
+                      :label="col.title"
+                      :width="col.width"
+                      :key="col.id"
+                    ></el-table-column>
+                  </el-table>
                 </el-tab-pane>
 
                 <el-tab-pane name="sixth">
@@ -127,6 +208,17 @@
                       type="primary"
                     />
                   </div>
+
+                  <el-table border :data="this.legalAction_list" style="width: 100%">
+                    <el-table-column
+                      v-for="col in this.legalAction_cols"
+                      stripe
+                      :prop="col.key"
+                      :label="col.title"
+                      :width="col.width"
+                      :key="col.id"
+                    ></el-table-column>
+                  </el-table>
                 </el-tab-pane>
               </el-tabs>
             </el-col>
@@ -138,31 +230,92 @@
 </template>
 
 <script>
-import countTo from "vue-count-to";
 import api from "@/utils/api";
 import companyDetails_data from "@/utils/companyDetails_data";
+import Bus from "@/assets/bus.js";
+import http from "@/utils/http";
 
 export default {
   name: "CompanyDetails",
-  components: { countTo },
   data() {
     return {
-      company_name: "test", //公司名
+      id: "",
+      company_msg: {
+        name: "",
+        code: "",
+        econKind: "",
+        address: "",
+        operName: "",
+        registCapi: "",
+        scope: "",
+        startDate: "",
+        status: "",
+        username: "",
+        phone: ""
+      }, //公司名
       company_verify: 0, //公司审核状态
-      businessInfo_amount: 0, //工商信息消息数目
-      taxInfo_amount: 0, //纳税情况消息数目
+
       shareholderInfo_amount: 2, //股东信息消息数目
       businessChange_amount: 1, //工商变更消息数目
       abnormalInfo_amount: 4, //异常记录消息数目
       legalAction_amount: 5, //法律诉讼消息数目
-      fullname: companyDetails_data.full_name //公司全称
+
+      shareholderInfo_cols: companyDetails_data.shareholder_cols, //股东信息表头
+      businessChange_cols: companyDetails_data.businessChange_cols, //工商变更表头
+      abnormalInfo_cols: companyDetails_data.abnormalInfo_cols, //异常记录表头
+      legalAction_cols: companyDetails_data.legalAction_cols, //法律诉讼表头
+
+      taxInfo_list: [], //纳税情况列表
+      shareholderInfo_list: [], //股东信息列表
+      businessChange_list: [], //工商变更表头
+      abnormalInfo_list: [], //异常记录表头
+      legalAction_list: [] //法律诉讼表头
     };
+  },
+  methods: {
+    company_data() {
+      this.id = this.$route.params.id;
+      console.log(this.id);
+    },
+    get_data: async function() {
+      let params = { id: this.id };
+      const res = await http.post(api.company_query, params);
+      if (res.data) {
+        let data = res.data;
+        console.log(data);
+        this.company_msg = {
+          name: data.Name,
+          code: data.Code,
+          econKind: data.EconKind,
+          address: data.Address,
+          operName: data.OperName,
+          registCapi: data.RegistCapi,
+          scope: data.Scope,
+          status: data.Status,
+          startDate: data.StartDate
+        };
+      }
+    }
+  },
+  created() {
+    this.company_data();
+    this.get_data();
   }
 };
-// console.log(this.shareholderInfo)
 </script>
 
 <style  scoped>
+.gridtable {
+  font-family: verdana, arial, sans-serif;
+  font-size: 16px;
+  color: #333333;
+  border-width: 5px;
+  border: 5px;
+  border-color: #666666;
+  border-collapse: collapse;
+  margin: 15px auto;
+  width: 80%;
+}
 .el-row {
   margin-bottom: 20px;
 }
@@ -185,11 +338,12 @@ export default {
 }
 table .tb {
   background: #f2f9fc;
+  width: auto;
 }
 table td {
   padding: 12px 10px 12px 10px;
   border: #e4eef6 1px solid;
-  word-break: break-all;
+  word-break: keep-all;
   font-size: 14px;
   line-height: 19px;
   color: #222;
