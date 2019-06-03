@@ -1,3 +1,7 @@
 dist
+<<<<<<< HEAD
 venv
+=======
+/venv
+>>>>>>> ffac915a75da3b868428d9212d3f1507adbf4535
 /myvue/node_modules

@@ -13,11 +13,13 @@ from pypinyin import lazy_pinyin
 from werkzeug.utils import secure_filename
 
 from app.models.GetOpExceptionApi import GetOpException
-from app.models.admin import db, Town, Company, RefreshTime, CompanyAbnormal, CompanyCourtNotice, CompanySearchShiXin
+from app.models.admin import db, Town, Company, RefreshTime, CompanyAbnormal, CompanyCourtNotice, CompanySearchShiXin, \
+    CompanyPartner
 from app.models.QichachaApi import Qichacha
 from app.tools.FileExport import excel
 from app.secure import mondb
 from app.tools.datetime_to_json import DateEncoder
+from models.SearchShiXinApi import SearchShiXin
 from . import townss
 from sqlalchemy import extract, and_, or_
 
@@ -433,6 +435,7 @@ def multi_count():
         "multiOther_amount": multiOther_amount,
     }
     data = json.dumps(data)
+    print(data)
     return data, 200, {"ContentType": "application/json"}
 
 
@@ -478,8 +481,8 @@ def company_message_date():
         amountk = 0
         enterCapital_size = 0
         part_amount = 0
-        duty_amount = 0
         sum_amount = 0
+        duty_amount = 0
         for i in range(0, date_max - date_min):
             for y in range(1, 13):
                 data = i + date_min
@@ -533,6 +536,46 @@ def company_message_date():
 
 
 # ********************** 公司风险 ***********************
+@townss.route('/test/', methods=['POST'])
+def test():
+    if request.method == 'POST':
+        com = db.session.query(Company).filter(Company.company_uid == '91420100066818243C').first()
+        g_list_v = Qichacha.get_details_by_name(com.company_uid)  # 每个公司获企查查 获取公司信息
+        g_list_v = Qichacha.get_details_by_name(com.company_uid)  # 每个公司获企查查 获取公司信息
+        print(g_list_v)
+        if g_list_v['Status'] == '200':
+            g_list_v = g_list_v['Result']
+            for item in g_list_v:
+                Company_partner_list = db.session.query(CompanyPartner).filter(
+                    CompanyPartner.company_id == com.id).all()
+                if not Company_partner_list:
+                    print('插入一条', com.company_uid, '的股东信息')
+                    friendship = CompanySearchShiXin(StockName=item['StockName'], StockType=item['StockType'],
+                                                     StockPercent=item['StockPercent'], ShouldCapi=item['ShouldCapi'],
+                                                     ShoudDate=item['ShoudDate'], InvestType=item['InvestType'],
+                                                     InvestName=item['InvestName'], RealCapi=item['RealCapi'],
+                                                     CapiDate=item['CapiDate'],
+                                                     company_id=com.id)
+                    db.session.add(friendship)
+                    db.session.commit()
+                else:
+                    for i in Company_partner_list:
+                        i.StockName = item['StockName']
+                        i.StockType = item['StockType']
+                        i.StockPercent = item['StockPercent']
+                        i.ShouldCapi = item['ShouldCapi']
+                        i.ShoudDate = item['ShoudDate']
+                        i.InvestType = item['InvestType']
+                        i.InvestName = item['InvestName']
+                        i.RealCapi = item['RealCapi']
+                        i.CapiDate = item['CapiDate']
+                        i.company_id = item['company_id']
+                    db.session.commit()
+        data = {}
+        data = jsonify(data)
+        return data, 200, {"ContentType": "application/json"}
+
+
 @townss.route('/company_risks/', methods=['POST'])
 def company_risks():
     if request.method == 'POST':
@@ -543,12 +586,12 @@ def company_risks():
         d2 = datetime(date2[0], date2[1], date2[2])
         delta = d2 - d1
         delta = delta.days
-        # if delta >= 7:
-        refreshtime.times = time.strftime('%Y-%m-%d', date2)
-        db.session.commit()
-        company_risk_update()
+        if delta >= 7:
+            refreshtime.times = time.strftime('%Y-%m-%d', date2)
+            db.session.commit()
+            company_risk_update()
 
-        company_list = db.session.query(Company).limit(2).all()
+        company_list = db.session.query(Company).all()
         m = company_risks_v(company_list)
         value = 0
         if len(m) > 0:
@@ -596,98 +639,145 @@ def company_risk_update():
     # ca = db.session.query(CompanyAbnormal).all() # 入驻公司异常信息表
     ccn = db.session.query(CompanyCourtNotice).all()  # 查询开庭公告
     cssx = db.session.query(CompanySearchShiXin).all()  # 失信被执行人信息
-    company_list = db.session.query(Company).limit(10)  # 公司列表
+    company_list = db.session.query(Company).all()  # 公司列表
     for i in company_list:  # 遍历每个公司
-        g_list_v = GetOpException.get_details_by_name(i.company_uid)  # 每个公司获企查查 异常列表
-        if g_list_v['Status'] == 200:
+        g_list_v = SearchShiXin.get_details_by_name(i.company_uid)  # 每个公司获企查查 失信列表
+        if g_list_v['Status'] == '200':
             g_list_v = g_list_v['Result']
-            for y in g_list_v:
-                mm = db.session.query(CompanyAbnormal).filter(CompanyAbnormal.company_uid == i.company_uid,
-                                                              CompanyAbnormal.AddDate == g_list_v[
-                                                                  'AddDate']).first()
-                if not mm:
-                    print('不存在')
-                    friendship = CompanyAbnormal(company_uid=i.company_uid, AddReason=y.AddReason,
-                                                 AddDate=y.AddDate,
-                                                 RomoveReason=y.RomoveReason, RemoveDate=y.RemoveDate,
-                                                 DecisionOffice=y.DecisionOffice,
-                                                 RemoveDecisionOffice=y.RemoveDecisionOffice,
-                                                 company_id=i.company_id)
+            for item in g_list_v:
+                ShiXin_info = db.session.query(CompanySearchShiXin).filter(
+                    CompanySearchShiXin.company_id == i.id).filter(CompanySearchShiXin.Anno == item['Anno']).first()
+                if not ShiXin_info:
+                    print('插入一条', item['Name'], '的失信记录')
+                    friendship = CompanySearchShiXin(nid=item['Id'], Name=item['Name'],
+                                                     Liandate=item['Liandate'], Anno=item['Anno'],
+                                                     Orgno=item['Orgno'], Ownername=item['Ownername'],
+                                                     Executegov=item['Executegov'], Province=item['Province'],
+                                                     Executeunite=item['Executeunite'], Yiwu=item['Yiwu'],
+                                                     Executestatus=item['Executestatus'],
+                                                     Actionremark=item['Actionremark'],
+                                                     Publicdate=item['Publicdate'], Age=item['Age'],
+                                                     Sexy=item['Sexy'], Executeno=item['Executeno'],
+                                                     Performedpart=item['Performedpart'],
+                                                     Unperformpart=item['Unperformpart'],
+                                                     OrgType=item['OrgType'], OrgTypeName=item['OrgTypeName'],
+                                                     company_id=i.id)
                     db.session.add(friendship)
+                    db.session.commit()
                 else:
-                    print('存在')
-                    friendship = mm
-                    friendship.AddReason = y.AddReason
-                    friendship.AddDate = y.AddDate
-                    friendship.RomoveReason = y.RomoveReason
-                    friendship.RemoveDate = y.RemoveDate
-                    friendship.DecisionOffice = y.DecisionOffice
-                    friendship.RemoveDecisionOffice = y.RemoveDecisionOffice
-                db.session.commit()
+                    print('更新', item['Name'], '的失信记录')
+                    ShiXin_info.nid = item['Id']
+                    ShiXin_info.Name = item['Name']
+                    ShiXin_info.Liandate = item['Liandate']
+                    ShiXin_info.Anno = item['Anno']
+                    ShiXin_info.Orgno = item['Orgno']
+                    ShiXin_info.Ownername = item['Ownername']
+                    ShiXin_info.Executegov = item['Executegov']
+                    ShiXin_info.Province = item['Province']
+                    ShiXin_info.Executeunite = item['Executeunite']
+                    ShiXin_info.Yiwu = item['Yiwu']
+                    ShiXin_info.Executestatus = item['Executestatus']
+                    ShiXin_info.Actionremark = item['Actionremark']
+                    ShiXin_info.Publicdate = item['Publicdate']
+                    ShiXin_info.Age = item['Age']
+                    ShiXin_info.Sexy = item['Sexy']
+                    ShiXin_info.Executeno = item['Executeno']
+                    ShiXin_info.Performedpart = item['Performedpart']
+                    ShiXin_info.Unperformpart = item['Unperformpart']
+                    ShiXin_info.OrgType = item['OrgType']
+                    ShiXin_info.OrgTypeName = item['OrgTypeName']
+                    db.session.commit()
 
-#
-# def g_list(value):
-#     g_list_v = GetOpException.get_details_by_name(value)
-#     return g_list_v
-#
-# def g_verification(company_id, company_uid, g_list_v, ca):
-#
-#     amount = len(g_list_v)
-#     g_list_add = []
-#     for i in g_list_v:
-#         m = False
-#         for y in ca:
-#             if y.company_id == company_uid and y.AddDate == i.AddDate:
-#                 if y.status == 0:
-#                     amount = amount-1
-#             elif y.company_id == company_uid and y.AddDate != i.AddDate:
-#                 m = True
-#         if m:
-#             g_list = CompanyAbnormal(company_uid=company_uid, AddReason=i.AddReason, AddDate=i.AddDate,
-#                                      RomoveReason=i.RomoveReason, RemoveDate=i.RemoveDate,
-#                                      DecisionOffice=i.DecisionOffice, RemoveDecisionOffice=i.RemoveDecisionOffice,
-#                                      company_id=company_id)
-#     g_list_add.append(g_list)
-#
-#     db.session.add_all(g_list_add)
-#     db.session.commit()
-#     return amount
-#
-# def sc_list(value):
-#     sc_list_v = SearchCourtNotice.get_details_by_name(value)
-#     return sc_list_v
-#
-# def ss_list(value):
-#     ss_list_v = SearchShiXin.get_details_by_name(value)
-#     return ss_list_v
+                    # g_list_v = GetOpException.get_details_by_name(i.company_uid)  # 每个公司获企查查 异常列表
+                    # if g_list_v['Status'] == 200:
+                    #     g_list_v = g_list_v['Result']
+                    #     for y in g_list_v:
+                    #         mm = db.session.query(CompanyAbnormal).filter(CompanyAbnormal.company_uid == i.company_uid,
+                    #                                                       CompanyAbnormal.AddDate == g_list_v[
+                    #                                                           'AddDate']).first()
+                    #         if not mm:
+                    #             print('不存在')
+                    #             friendship = CompanyAbnormal(company_uid=i.company_uid, AddReason=y.AddReason,
+                    #                                          AddDate=y.AddDate,
+                    #                                          RomoveReason=y.RomoveReason, RemoveDate=y.RemoveDate,
+                    #                                          DecisionOffice=y.DecisionOffice,
+                    #                                          RemoveDecisionOffice=y.RemoveDecisionOffice,
+                    #                                          company_id=i.company_id)
+                    #             db.session.add(friendship)
+                    #         else:
+                    #             print('存在')
+                    #             friendship = mm
+                    #             friendship.AddReason = y.AddReason
+                    #             friendship.AddDate = y.AddDate
+                    #             friendship.RomoveReason = y.RomoveReason
+                    #             friendship.RemoveDate = y.RemoveDate
+                    #             friendship.DecisionOffice = y.DecisionOffice
+                    #             friendship.RemoveDecisionOffice = y.RemoveDecisionOffice
+                    #         db.session.commit()
 
-# for i in company_list:
-#     g_value = GetOpException.get_details_by_name(i.company_uid)
-#     sc_value = SearchCourtNotice.get_details_by_name(i.company_uid)
-#     ss_value = SearchShiXin.get_details_by_name(i.company_uid)
-#
-#
-#     if g_value != {}:
-#         g_list = []
-#         for x in g_value:
-#
-#             for y in ca:
-#                 if y.company_id != i.id and y.AddDate != x.AddDate:
-#                     company_abnormal = CompanyAbnormal(company_uid=i.uid, compauy_name=i.company_name,
-#                                                        AddReason=x.AddReason, AddDate=x.AddDate,
-#                                                        RomoveReason=x.RomoveReason, RemoveDate=x.RemoveDate,
-#                                                        DecisionOffice=x.DecisionOffice, RemoveDecisionOffice=x.RemoveDecisionOffice,
-#                                                        company_id=i.id)
-#                     g_list.append(company_abnormal)
-#         company_risks_g = len(g_list)
-#     else:
-#         company_risks_g = 0
-#
-#     if sc_value != {}:
-#         sc_list = []
-#         for x in sc_value:
-#             company_court_notice = CompanyCourtNotice(Defendantlist=x.Defendantlist, Executegov=x.Executegov, Prosecutorlist=x.Prosecutorlist, LianDate=x.LianDate, CaseReason=x.CaseReason, nId=x.nId, CaseNo=x.CaseNo, status=x.status, company_id=i.id)
-#             sc_list.append(company_court_notice)
-#         company_risks_sc = len(sc_list)
-#     else:
-#         company_risks_sc = 0
+                    #
+                    # def g_list(value):
+                    #     g_list_v = GetOpException.get_details_by_name(value)
+                    #     return g_list_v
+                    #
+                    # def g_verification(company_id, company_uid, g_list_v, ca):
+                    #
+                    #     amount = len(g_list_v)
+                    #     g_list_add = []
+                    #     for i in g_list_v:
+                    #         m = False
+                    #         for y in ca:
+                    #             if y.company_id == company_uid and y.AddDate == i.AddDate:
+                    #                 if y.status == 0:
+                    #                     amount = amount-1
+                    #             elif y.company_id == company_uid and y.AddDate != i.AddDate:
+                    #                 m = True
+                    #         if m:
+                    #             g_list = CompanyAbnormal(company_uid=company_uid, AddReason=i.AddReason, AddDate=i.AddDate,
+                    #                                      RomoveReason=i.RomoveReason, RemoveDate=i.RemoveDate,
+                    #                                      DecisionOffice=i.DecisionOffice, RemoveDecisionOffice=i.RemoveDecisionOffice,
+                    #                                      company_id=company_id)
+                    #     g_list_add.append(g_list)
+                    #
+                    #     db.session.add_all(g_list_add)
+                    #     db.session.commit()
+                    #     return amount
+                    #
+                    # def sc_list(value):
+                    #     sc_list_v = SearchCourtNotice.get_details_by_name(value)
+                    #     return sc_list_v
+                    #
+                    # def ss_list(value):
+                    #     ss_list_v = SearchShiXin.get_details_by_name(value)
+                    #     return ss_list_v
+
+                    # for i in company_list:
+                    #     g_value = GetOpException.get_details_by_name(i.company_uid)
+                    #     sc_value = SearchCourtNotice.get_details_by_name(i.company_uid)
+                    #     ss_value = SearchShiXin.get_details_by_name(i.company_uid)
+                    #
+                    #
+                    #     if g_value != {}:
+                    #         g_list = []
+                    #         for x in g_value:
+                    #
+                    #             for y in ca:
+                    #                 if y.company_id != i.id and y.AddDate != x.AddDate:
+                    #                     company_abnormal = CompanyAbnormal(company_uid=i.uid, compauy_name=i.company_name,
+                    #                                                        AddReason=x.AddReason, AddDate=x.AddDate,
+                    #                                                        RomoveReason=x.RomoveReason, RemoveDate=x.RemoveDate,
+                    #                                                        DecisionOffice=x.DecisionOffice, RemoveDecisionOffice=x.RemoveDecisionOffice,
+                    #                                                        company_id=i.id)
+                    #                     g_list.append(company_abnormal)
+                    #         company_risks_g = len(g_list)
+                    #     else:
+                    #         company_risks_g = 0
+                    #
+                    #     if sc_value != {}:
+                    #         sc_list = []
+                    #         for x in sc_value:
+                    #             company_court_notice = CompanyCourtNotice(Defendantlist=x.Defendantlist, Executegov=x.Executegov, Prosecutorlist=x.Prosecutorlist, LianDate=x.LianDate, CaseReason=x.CaseReason, nId=x.nId, CaseNo=x.CaseNo, status=x.status, company_id=i.id)
+                    #             sc_list.append(company_court_notice)
+                    #         company_risks_sc = len(sc_list)
+                    #     else:
+                    #         company_risks_sc = 0

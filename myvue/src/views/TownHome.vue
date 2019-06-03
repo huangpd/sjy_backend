@@ -40,7 +40,7 @@
                 >累计注册公司：{{company_amount}} 家</el-button>
               </el-button-group>
               <div style="width:400px">
-                <ve-pie :data="chartData2"></ve-pie>
+                <ve-pie :data="chartData2" :loading="loading1"></ve-pie>
               </div>
             </el-col>
           </el-row>
@@ -51,7 +51,7 @@
             :data="chartData1"
             :data-zoom="dataZoom1"
             :settings="chartSettings1"
-            :loading="loading"
+            :loading="loading2"
             height="800px"
           ></ve-histogram>
         </el-col>
@@ -85,8 +85,8 @@
         </el-button-group>
         <br>
         <template>
-          <el-table :data="company_risk" border height="20vh" style="width: 100%" stripe>
-            <el-table-column prop="company_name" label="公司名" width="120"></el-table-column>
+          <el-table :data="company_risk" border height="auto" style="width: 100%" stripe>
+            <el-table-column prop="company_name" label="公司名" width="auto"></el-table-column>
 
             <el-table-column prop="company_search_shi_xin" label="失信被执行人信息" width="150">
               <template slot-scope="scope">
@@ -147,7 +147,7 @@
               </el-card>
               <el-card shadow="hover">
                 入驻资金规模
-                <h3>{{ this.multiCapital_size }}</h3>
+                <h3>{{ this.multiCapital_size }}万</h3>
               </el-card>
             </el-col>
           </el-col>
@@ -162,7 +162,7 @@
             <el-button-group>
               <el-button type="primary" icon="el-icon-edit">企业占比</el-button>
             </el-button-group>
-            <ve-pie :data="chartData3" width="20vw"></ve-pie>
+            <ve-pie :data="chartData3" width="20vw" :loading="loading3"></ve-pie>
           </el-col>
         </el-col>
 
@@ -175,7 +175,13 @@
             <el-button-group>
               <el-button type="primary" icon="el-icon-edit">管理人类型</el-button>
             </el-button-group>
-            <ve-pie :data="chartData6" :settings="chartSettings6" width="20vw"></ve-pie>
+            <ve-pie
+              :data="chartData6"
+              :settings="chartSettings6"
+              width="20vw"
+              :loading="loading4"
+              ref="test"
+            ></ve-pie>
           </el-col>
         </el-col>
 
@@ -194,6 +200,7 @@ import { regionDataPlus, CodeToText } from "element-china-area-data";
 import countTo from "vue-count-to";
 import http from "@/utils/http";
 import api from "@/utils/api";
+import "v-charts/lib/style.css";
 
 export default {
   name: "TownHome",
@@ -213,7 +220,6 @@ export default {
       date_max: 2019,
       options: regionDataPlus,
       area: [],
-      loading: true,
       options1: [
         {
           value: "选项1",
@@ -279,7 +285,14 @@ export default {
           { 日期: "有限责任", 访问用户: 564 }
         ]
       },
-      chartData3: {},
+      chartData3: {
+        columns: ["日期", "访问用户"],
+        rows: [
+          { 日期: "其他", 访问用户: 0 },
+          { 日期: "有限合伙", 访问用户: 0 },
+          { 日期: "有限责任", 访问用户: 0 }
+        ]
+      },
       chartData6: {
         columns: ["日期", "访问用户"],
         rows: [
@@ -305,7 +318,11 @@ export default {
           this.cityName = v.name;
         }
       },
-      companys: 817
+      companys: 817,
+      loading1: 1,
+      loading2: 1,
+      loading3: 1,
+      loading4: 1
     };
   },
 
@@ -314,10 +331,8 @@ export default {
       var province = CodeToText[value[0]];
       var city = CodeToText[value[1]];
       var area = CodeToText[value[2]];
-
       console.log(value);
       console.log(province, city, area);
-
       if (!province || province == "全部") {
         province = "None";
       }
@@ -327,9 +342,11 @@ export default {
       if (!area || area == "全部") {
         area = "None";
       }
-
       this.company_message_date_v(province, city, area);
+      this.loading1 = 1;
+      this.loading2 = 1;
     },
+
     handleChange_delete() {
       this.selectedOptions = [];
     },
@@ -344,23 +361,22 @@ export default {
       const res = await http.post(api.company_message_date, params);
       if (res.data.value == 1) {
         this.chartData1.rows = res.data.message;
-        if (this.chartData1.rows.length !== 0) {
-          this.loading = false;
-        }
         this.company_amount = res.data.amount;
         this.endVal = res.data.enterCapital_size;
         var sum_amount = res.data.sum_amount;
         var part_amount = res.data.part_amount;
         var duty_amount = res.data.duty_amount;
-        var oter_amount = sum_amount - part_amount - duty_amount;
+        var other_amount = sum_amount - part_amount - duty_amount;
         this.chartData2 = {
           columns: ["日期", "访问用户"],
           rows: [
-            { 日期: "其他", 访问用户: oter_amount },
+            { 日期: "其他", 访问用户: other_amount },
             { 日期: "有限合伙", 访问用户: part_amount },
             { 日期: "有限责任", 访问用户: duty_amount }
           ]
         };
+        this.loading1 = 0;
+        this.loading2 = 0;
       }
     },
     company_message_date_v: async function(province, city, area) {
@@ -375,11 +391,6 @@ export default {
       if (res.data.value == 1) {
         this.chartData1.rows = res.data.message;
         this.enterCapital_size = res.data.enterCapital_size;
-        if (this.chartData1.rows.length !== 0) {
-          this.dataEmpty1 = false;
-        } else {
-          this.dataEmpty1 = true;
-        }
         this.company_amount = res.data.amount;
         this.company_amount = res.data.amount;
         this.endVal = res.data.enterCapital_size;
@@ -395,6 +406,8 @@ export default {
             { 日期: "有限责任", 访问用户: duty_amount }
           ]
         };
+        this.loading1 = 0;
+        this.loading2 = 0;
       }
     },
     town_message_date: async function() {
@@ -402,7 +415,7 @@ export default {
       const res = await http.post(api.town_message_date, params);
       if (res.data.value == 1) {
         this.chartData8.rows = res.data.message;
-        console.log(this.chartData8.rows);
+        // console.log(this.chartData8.rows);
       }
     },
     company_risks: async function() {
@@ -410,7 +423,7 @@ export default {
       const res = await http.post(api.company_risks, params);
       if (res.data.value == 1) {
         this.company_risk = res.data.message;
-        console.log(this.company_risk);
+        // console.log(this.company_risk);
       }
     },
 
@@ -418,42 +431,40 @@ export default {
     multi_count: async function() {
       let params = {};
       const res = await http.post(api.multi_count, params);
-      var data = res.data;
-      this.multiCapital_size = data.multiCapital_size;
-      this.multiCompany_amount = data.multiCompany_amount;
-      this.multiManager_amount = data.multiManager_amount;
-      this.multiProduct_amount = data.multiProduct_amount;
+      this.multiCapital_size = res.data.multiCapital_size;
+      this.multiCompany_amount = res.data.multiCompany_amount;
+      this.multiManager_amount = res.data.multiManager_amount;
+      this.multiProduct_amount = res.data.multiProduct_amount;
       this.chartData3 = {
         columns: ["日期", "访问用户"],
         rows: [
-          { 日期: "其他", 访问用户: data.multiOther_amount },
-          { 日期: "有限合伙", 访问用户: data.multiPart_amount },
-          { 日期: "有限责任", 访问用户: data.multiDuty_amount }
+          { 日期: "其他", 访问用户: res.data.multiOther_amount },
+          { 日期: "有限合伙", 访问用户: res.data.multiPart_amount },
+          { 日期: "有限责任", 访问用户: res.data.multiDuty_amount }
         ]
       };
+      this.loading3 = 0;
+      console.log(this.chartData3);
+      this.chartData6 = {
+        columns: ["日期", "访问用户"],
+        rows: [
+          { 日期: "私募产品", 访问用户: this.multiProduct_amount },
+          { 日期: "私募管理人", 访问用户: this.multiManager_amount }
+        ]
+      };
+      this.loading4 = 0;
     }
   },
   created() {
-    this.company_message_date();
+    this.multi_count();
     this.town_message_date();
     this.company_risks();
-    this.multi_count();
+    this.company_message_date();
   }
 };
 </script>
 
 <style scoped>
-.el-row {
-  margin-bottom: 20px;
-}
-
-.el-row:last-child {
-  margin-bottom: 0;
-}
-
-.el-col {
-  border-radius: 4px;
-}
 .bg-purple-dark {
   background: #99a9bf;
 }

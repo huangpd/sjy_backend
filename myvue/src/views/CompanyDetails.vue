@@ -316,15 +316,6 @@ export default {
   margin: 15px auto;
   width: 80%;
 }
-.el-row {
-  margin-bottom: 20px;
-}
-.el-row:last-child {
-  margin-bottom: 0;
-}
-.el-col {
-  border-radius: 4px;
-}
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;

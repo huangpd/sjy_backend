@@ -255,6 +255,37 @@ class CompanySearchShiXin(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
 
 
+# 公司股东信息
+class CompanyPartner(db.Model):
+    __tablename__ = 'company_partner'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    StockName = db.Column(db.String(100))  # 股东
+    StockType = db.Column(db.String(100))  # 股东类型
+    StockPercent = db.Column(db.String(100))  # 出资比例
+    ShouldCapi = db.Column(db.String(100))  # 认缴出资额
+    ShoudDate = db.Column(db.String(100))  # 认缴出资时间
+    InvestType = db.Column(db.String(100))  # 认缴出资方式
+    InvestName = db.Column(db.String(100))  # 实际出资方式
+    RealCapi = db.Column(db.String(100))  # 实际出资额
+    CapiDate = db.Column(db.String(100))  # 实缴时间
+
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+
+
+# 公司工商变更信息
+class CompanyChange(db.Model):
+    __tablename__ = 'company_change'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ProjectName = db.Column(db.String(100))  # 变更事项
+    BeforeContent = db.Column(db.String(100))  # 变更前内容
+    AfterContent = db.Column(db.String(100))  # 变更后内容
+    ChangeDate = db.Column(db.String(100))  # 变更日期
+
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+
+
+
+
 class RefreshTime(db.Model):
     __tablename__ = 'refresh_time'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

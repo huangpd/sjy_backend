@@ -45,7 +45,7 @@
         <span>地区筛选:</span>
         <el-button-group>
           <el-cascader size="large" :options="options" @change="handleChange"></el-cascader>
-        </el-button-group>
+        </el-button-group>&emsp;&emsp;
         <el-button type="primary" @click="export_excel(1)">导出到Excel文件</el-button>
       </div>
 
@@ -439,7 +439,7 @@ export default {
 };
 </script>
 
-<style>
+<style <style scoped>
 .el-cascader {
   margin-left: 0;
   width: 260px;
