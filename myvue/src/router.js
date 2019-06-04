@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import TownHome from './views/TownHome.vue'
-import TownEnter from './views/TownEnter.vue'
-import TownCompany from './views/TownCompany.vue'
-import CompanyDetails from './views/CompanyDetails.vue'
+import TownHome from '@/views/TownHome.vue'
+import TownEnter from '@/views/TownEnter.vue'
+import TownCompany from '@/views/TownCompany.vue'
+import CompanyDetails from '@/views/CompanyDetails.vue'
 
 
 Vue.use(Router)

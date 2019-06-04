@@ -25,9 +25,9 @@ npm run test
 npm run lint
 ```
 
-### Run your unit tests
+### Compiles and hot-reloads for development
 ```
-npm run test:unit
+npm run watch
 ```
 
 ### Customize configuration

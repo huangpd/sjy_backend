@@ -273,6 +273,7 @@ export default {
   },
   methods: {
     get_data: async function() {
+      let params = { id: this.id };
       const res = await http.post(api.company_query, params);
       if (res.data) {
         let company_data = res.data;
@@ -291,6 +292,7 @@ export default {
         this.businessChange_list = company_data.businessChange_list;
         this.abnormalInfo_list = company_data.abnormalInfo_list;
         this.legalAction_list = company_data.legalAction_list;
+        console.log(this.shareholderInfo_list)
 
         this.shareholderInfo_amount = this.shareholderInfo_list.length;
         this.businessChange_amount = this.businessChange_list.length;
