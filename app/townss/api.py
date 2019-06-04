@@ -1,3 +1,4 @@
+import logging
 import shutil
 import string
 from datetime import datetime
@@ -6,7 +7,7 @@ import random
 import time
 
 import xlrd
-from flask import request, jsonify, make_response, send_file
+from flask import request, jsonify, make_response, send_file, current_app
 import json
 
 from pypinyin import lazy_pinyin
@@ -14,7 +15,7 @@ from werkzeug.utils import secure_filename
 
 from app.models.GetOpExceptionApi import GetOpException
 from app.models.admin import db, Town, Company, RefreshTime, CompanyAbnormal, CompanyCourtNotice, CompanySearchShiXin, \
-    CompanyPartner
+    CompanyPartner, CompanyChange
 from app.models.QichachaApi import Qichacha
 from app.tools.FileExport import excel
 from app.secure import mondb
@@ -22,6 +23,15 @@ from app.tools.datetime_to_json import DateEncoder
 from models.SearchShiXinApi import SearchShiXin
 from . import townss
 from sqlalchemy import extract, and_, or_
+
+# 日志配置
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+handler = logging.FileHandler("./app/log/log.txt")
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 # **************** 小镇 ************************
@@ -301,12 +311,28 @@ def company_amend():
 @townss.route('/company_query/', methods=['POST'])
 def company_query():
     if request.method == 'POST':
-        com_id = request.form['id']
-        company = db.session.query(Company).filter(Company.id == com_id).first()
+        company_id = request.form['id']
+        company = db.session.query(Company).filter(Company.id == company_id).first()
+
+        company_partners = db.session.query(CompanyPartner).filter(CompanyPartner.company_id == company_id).all()
+        company_partners = company_partner_json(company_partners)
+
+        company_changes = db.session.query(CompanyChange).filter(CompanyChange.company_id == company_id).all()
+        company_changes = company_change_json(company_changes)
+
+        company_abnormal = db.session.query(CompanyAbnormal).filter(CompanyAbnormal.company_id == company_id).all()
+        company_abnormal = company_change_json(company_abnormal)
+
+        company_court_notice = db.session.query(CompanyCourtNotice).filter(
+            CompanyCourtNotice.company_id == company_id).all()
+        company_court_notice = company_change_json(company_court_notice)
+
         data = {'Name': company.company_name, 'OperName': company.OperName, 'StartDate': company.StartDate,
                 'Status': company.Status, 'Code': company.company_uid,
                 'RegistCapi': company.RegistCapi, 'EconKind': company.EconKind,
-                'Address': company.Address, 'Scope': company.Scope, }
+                'Address': company.Address, 'Scope': company.Scope, 'shareholderInfo_list': company_partners,
+                'businessChange_list': company_changes, 'abnormalInfo_list': company_abnormal,
+                'legalAction_list': company_court_notice}
         data = json.dumps(data, cls=DateEncoder)
         return data, 200, {"ContentType": "application/json"}
 
@@ -315,14 +341,54 @@ def company_query():
 @townss.route('/company_message/', methods=['POST'])
 def company_message():
     if request.method == 'POST':
-        companys = db.session.query(Company).all()
-        companys = company_josn(companys)
-        data = json.dumps(companys)
+        company_list = db.session.query(Company).all()
+        company_list = company_json(company_list)
+        data = json.dumps(company_list)
         return data, 200, {"ContentType": "application/json"}
 
 
-# 加载的公司字段
-def company_josn(v):
+# 打包json--公司股东
+def company_partner_json(v):
+    y = []
+    for i in v:
+        y.append({'StockName': i.StockName, 'StockType': i.StockType, 'StockPercent': i.StockPercent,
+                  'ShouldCapi': i.ShouldCapi,
+                  'ShoudDate': i.ShoudDate})
+    return y
+
+
+# 打包json--公司工商变更
+def company_change_json(v):
+    y = []
+    for i in v:
+        y.append({'ProjectName': i.ProjectName, 'ChangeDate': i.ChangeDate, 'BeforeContent': i.BeforeContent,
+                  'AfterContent': i.AfterContent,
+                  })
+    return y
+
+
+# 打包json--公司基本信息
+def company_json(v):
+    y = []
+    for i in v:
+        y.append({'id': i.id, 'uid': i.uid, 'company_name': i.company_name, 'company_uid': i.company_uid,
+                  'company_town_uid': i.company_town_uid, 'company_town_name': i.company_town_name,
+                  'username': i.username, 'phone': i.phone, })
+    return y
+
+
+# 打包json--公司异常记录
+def company_abnormal_json(v):
+    y = []
+    for i in v:
+        y.append({'id': i.id, 'uid': i.uid, 'company_name': i.company_name, 'company_uid': i.company_uid,
+                  'company_town_uid': i.company_town_uid, 'company_town_name': i.company_town_name,
+                  'username': i.username, 'phone': i.phone, })
+    return y
+
+
+# 打包json--公司法律诉讼
+def company_court_notice_json(v):
     y = []
     for i in v:
         y.append({'id': i.id, 'uid': i.uid, 'company_name': i.company_name, 'company_uid': i.company_uid,
@@ -332,15 +398,15 @@ def company_josn(v):
 
 
 # 导出excel的字段
-def companys_export(companys):
-    comInfo_list = []
-    for com in companys:
-        comInfo_list.append((com.company_name, com.company_town_name, com.username, com.phone,
-                             com.BelongOrg, com.OperName, com.StartDate, com.phone,
-                             com.Status, com.Province, com.RegistCapi, com.EconKind,
-                             com.Address, com.Scope, com.company_abnormal_amount, com.company_court_notice_amount,
-                             com.company_search_shiXin_amount))
-    return comInfo_list
+def company_export(company_list):
+    info_list = []
+    for com in company_list:
+        info_list.append((com.company_name, com.company_town_name, com.username, com.phone,
+                          com.BelongOrg, com.OperName, com.StartDate, com.phone,
+                          com.Status, com.Province, com.RegistCapi, com.EconKind,
+                          com.Address, com.Scope, com.company_abnormal_amount, com.company_court_notice_amount,
+                          com.company_search_shiXin_amount))
+    return info_list
 
 
 # 动态加载公司
@@ -363,7 +429,7 @@ def company_message_v():
             companys = companys.filter(Town.province == province, Town.city == city, Town.area == area)
         companys = companys.all()
         if is_export:
-            companys = companys_export(companys)
+            companys = company_export(companys)
             columns = ['公司名称', '所属设基院', '联系人', '联系人电话', '监管局', 'opername', 'start-date', 'EndDate', '经营状态',
                        'province',
                        '注册资本', '公司类型', '公司地址', 'scope', '异常信息', '开庭报告', '失信被执行人信息']
@@ -380,7 +446,7 @@ def company_message_v():
                 f.write(output)
             return filename
         else:
-            companys = company_josn(companys)
+            companys = company_json(companys)
         data = json.dumps(companys, cls=DateEncoder)  # 使用自定义的序列化气序列化date类型数据
         return data, 200, {"ContentType": "application/json"}
 
@@ -539,41 +605,118 @@ def company_message_date():
 @townss.route('/test/', methods=['POST'])
 def test():
     if request.method == 'POST':
-        com = db.session.query(Company).filter(Company.company_uid == '91420100066818243C').first()
-        g_list_v = Qichacha.get_details_by_name(com.company_uid)  # 每个公司获企查查 获取公司信息
-        g_list_v = Qichacha.get_details_by_name(com.company_uid)  # 每个公司获企查查 获取公司信息
-        print(g_list_v)
-        if g_list_v['Status'] == '200':
-            g_list_v = g_list_v['Result']
-            for item in g_list_v:
-                Company_partner_list = db.session.query(CompanyPartner).filter(
-                    CompanyPartner.company_id == com.id).all()
-                if not Company_partner_list:
-                    print('插入一条', com.company_uid, '的股东信息')
-                    friendship = CompanySearchShiXin(StockName=item['StockName'], StockType=item['StockType'],
-                                                     StockPercent=item['StockPercent'], ShouldCapi=item['ShouldCapi'],
-                                                     ShoudDate=item['ShoudDate'], InvestType=item['InvestType'],
-                                                     InvestName=item['InvestName'], RealCapi=item['RealCapi'],
-                                                     CapiDate=item['CapiDate'],
-                                                     company_id=com.id)
-                    db.session.add(friendship)
-                    db.session.commit()
-                else:
-                    for i in Company_partner_list:
-                        i.StockName = item['StockName']
-                        i.StockType = item['StockType']
-                        i.StockPercent = item['StockPercent']
-                        i.ShouldCapi = item['ShouldCapi']
-                        i.ShoudDate = item['ShoudDate']
-                        i.InvestType = item['InvestType']
-                        i.InvestName = item['InvestName']
-                        i.RealCapi = item['RealCapi']
-                        i.CapiDate = item['CapiDate']
-                        i.company_id = item['company_id']
-                    db.session.commit()
         data = {}
         data = jsonify(data)
         return data, 200, {"ContentType": "application/json"}
+
+
+def company_msg_update(company_list):
+    # company_list = db.session.query(Company).limit(5).all()
+    for com in company_list:
+        g_list_v = Qichacha.get_details_by_name(com.company_uid)  # 每个公司获企查查 获取公司信息
+        print(g_list_v)
+        if g_list_v['Status'] == '200':
+            partners = g_list_v['Result']['Partners']
+            changes = g_list_v['Result']['ChangeRecords']
+            company_partner_list = db.session.query(CompanyPartner).filter(
+                CompanyPartner.company_id == com.id).all()
+            company_change_list = db.session.query(CompanyChange).filter(
+                CompanyChange.company_id == com.id).all()
+            if not company_partner_list:
+                for item in partners:
+                    logger.info(msg=('插入一条', com.company_name, '的股东信息'))
+                    friendship = CompanyPartner(StockName=item['StockName'], StockType=item['StockType'],
+                                                StockPercent=item['StockPercent'], ShouldCapi=item['ShouldCapi'],
+                                                ShoudDate=item['ShoudDate'], InvestType=item['InvestType'],
+                                                InvestName=item['InvestName'], RealCapi=item['RealCapi'],
+                                                CapiDate=item['CapiDate'],
+                                                company_id=com.id)
+                    db.session.add(friendship)
+            else:
+                old_len = len(company_partner_list)
+                new_len = len(partners)
+                if old_len > new_len:
+                    for i in range(old_len):
+                        if i + 1 > new_len:
+                            logger.info(msg=('删除一条', com.company_name, '的股东信息'))
+                            db.session.delete(company_partner_list[i])
+                        else:
+                            logger.info('更新一条', com.company_name, '的股东信息')
+                            company_partner_list[i].StockName = partners[i]['StockName']
+                            company_partner_list[i].StockType = partners[i]['StockType']
+                            company_partner_list[i].StockPercent = partners[i]['StockPercent']
+                            company_partner_list[i].ShouldCapi = partners[i]['ShouldCapi']
+                            company_partner_list[i].ShoudDate = partners[i]['ShoudDate']
+                            company_partner_list[i].InvestType = partners[i]['InvestType']
+                            company_partner_list[i].InvestName = partners[i]['InvestName']
+                            company_partner_list[i].RealCapi = partners[i]['RealCapi']
+                            company_partner_list[i].CapiDate = partners[i]['CapiDate']
+                else:
+                    for i in range(new_len):
+                        if i + 1 > old_len:
+                            logger.info(msg=('插入一条', com.company_name, '的股东信息'))
+                            friendship = CompanyPartner(StockName=partners[i]['StockName'],
+                                                        StockType=partners[i]['StockType'],
+                                                        StockPercent=partners[i]['StockPercent'],
+                                                        ShouldCapi=partners[i]['ShouldCapi'],
+                                                        ShoudDate=partners[i]['ShoudDate'],
+                                                        InvestType=partners[i]['InvestType'],
+                                                        InvestName=partners[i]['InvestName'],
+                                                        RealCapi=partners[i]['RealCapi'],
+                                                        CapiDate=partners[i]['CapiDate'],
+                                                        company_id=com.id)
+                            db.session.add(friendship)
+                        else:
+                            logger.info(msg=('更新一条', com.company_name, '的股东信息'))
+                            company_partner_list[i].StockName = partners[i]['StockName']
+                            company_partner_list[i].StockType = partners[i]['StockType']
+                            company_partner_list[i].StockPercent = partners[i]['StockPercent']
+                            company_partner_list[i].ShouldCapi = partners[i]['ShouldCapi']
+                            company_partner_list[i].ShoudDate = partners[i]['ShoudDate']
+                            company_partner_list[i].InvestType = partners[i]['InvestType']
+                            company_partner_list[i].InvestName = partners[i]['InvestName']
+                            company_partner_list[i].RealCapi = partners[i]['RealCapi']
+                            company_partner_list[i].CapiDate = partners[i]['CapiDate']
+
+            if not company_change_list:
+                for item in changes:
+                    logger.info(msg=('插入一条', com.company_name, '的工商变更信息'))
+                    friendship = CompanyChange(ProjectName=item['ProjectName'],
+                                               BeforeContent=item['BeforeContent'],
+                                               AfterContent=item['AfterContent'], ChangeDate=item['ChangeDate'],
+                                               company_id=com.id)
+                    db.session.add(friendship)
+            else:
+                old_len = len(company_change_list)
+                new_len = len(changes)
+                if old_len > new_len:
+                    for i in range(old_len):
+                        if i + 1 > new_len:
+                            logger.info(msg=('删除一条', com.company_name, '的工商变更信息'))
+                            db.session.delete(company_change_list[i])
+                        else:
+                            logger.info(msg=('更新一条', com.company_name, '的工商变更信息'))
+                            company_change_list[i].ProjectName = changes[i]['ProjectName']
+                            company_change_list[i].BeforeContent = changes[i]['BeforeContent']
+                            company_change_list[i].AfterContent = changes[i]['AfterContent']
+                            company_change_list[i].ChangeDate = changes[i]['ChangeDate']
+                else:
+                    for i in range(new_len):
+                        if i + 1 > old_len:
+                            logger.info(msg=('插入一条', com.company_name, '的工商变更信息'))
+                            friendship = CompanyChange(ProjectName=changes[i]['ProjectName'],
+                                                       BeforeContent=changes[i]['BeforeContent'],
+                                                       AfterContent=changes[i]['AfterContent'],
+                                                       ChangeDate=changes[i]['ChangeDate'],
+                                                       company_id=com.id)
+                            db.session.add(friendship)
+                        else:
+                            logger.info(msg=('更新一条', com.company_name, '的工商变更信息'))
+                            company_change_list[i].ProjectName = changes[i]['ProjectName']
+                            company_change_list[i].BeforeContent = changes[i]['BeforeContent']
+                            company_change_list[i].AfterContent = changes[i]['AfterContent']
+                            company_change_list[i].ChangeDate = changes[i]['ChangeDate']
+    db.session.commit()
 
 
 @townss.route('/company_risks/', methods=['POST'])

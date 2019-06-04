@@ -28,7 +28,7 @@ export default new Router({
       component: TownCompany
     },
     {
-      path: '/Company_Details/',
+      path: '/Company_Details/:id',
       name: 'Company_Details',
       component: CompanyDetails
     },

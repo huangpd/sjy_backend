@@ -1,0 +1,83 @@
+{
+  "JobId": "",
+  "OrderNumber": "ECI2019060410224526137614",
+  "Result": {
+    "Partners": [
+      {
+        "StockName": "罗玉立",
+        "StockType": "自然人股东",
+        "StockPercent": "60.00%",
+        "ShouldCapi": "30",
+        "ShoudDate": "2013-04-25",
+        "InvestType": "货币",
+        "InvestName": null,
+        "RealCapi": null,
+        "CapiDate": null
+      },
+      {
+        "StockName": "罗婷婷",
+        "StockType": "自然人股东",
+        "StockPercent": "40.00%",
+        "ShouldCapi": "20",
+        "ShoudDate": "2013-04-25",
+        "InvestType": "货币",
+        "InvestName": null,
+        "RealCapi": null,
+        "CapiDate": null
+      }
+    ],
+    "Employees": [
+      {
+        "Name": "罗婷婷",
+        "Job": "监事"
+      },
+      {
+        "Name": "罗玉立",
+        "Job": "执行董事兼总经理"
+      }
+    ],
+    "Branches": [],
+    "ChangeRecords": [],
+    "ContactInfo": {
+      "WebSite": null,
+      "PhoneNumber": "18627938101",
+      "Email": "409558549@qq.com"
+    },
+    "Industry": {
+      "IndustryCode": "C",
+      "Industry": "制造业",
+      "SubIndustryCode": "33",
+      "SubIndustry": "金属制品业 ",
+      "MiddleCategoryCode": "338",
+      "MiddleCategory": "金属制日用品制造",
+      "SmallCategoryCode": null,
+      "SmallCategory": null
+    },
+    "KeyNo": "c04bef9353d024a087bf7e74582f0ac6",
+    "Name": "武汉精创炎五金机械有限公司",
+    "No": "420100000344777",
+    "BelongOrg": "武汉经济技术开发区（汉南区）市场监督管理局",
+    "OperName": "罗玉立",
+    "StartDate": "2013-04-28 00:00:00",
+    "EndDate": "",
+    "Status": "存续（在营、开业、在册）",
+    "Province": "HUB",
+    "UpdatedDate": "2019-06-04 04:24:30",
+    "CreditCode": "91420100066818243C",
+    "RegistCapi": "50万元人民币",
+    "EconKind": "有限责任公司(自然人投资或控股)",
+    "Address": "武汉经济技术开发区10R2地块水木清华商网1栋16号房2层(仅限办公)",
+    "Scope": "机械零部件、模具、夹具、治具的设计、制造、批发兼零售。(国家有专项规定的项目经审批后或凭有效许可证方可经营)",
+    "TermStart": "2013-04-28 00:00:00",
+    "TeamEnd": "2023-04-27 00:00:00",
+    "CheckDate": "2014-12-16 00:00:00",
+    "OrgNo": "06681824-3",
+    "IsOnStock": "0",
+    "StockNumber": null,
+    "StockType": null,
+    "OriginalName": [],
+    "ImageUrl": "https://co-image.qichacha.com/CompanyImage/default.jpg"
+  },
+  "Status": "200",
+  "Message": "查询成功"
+}

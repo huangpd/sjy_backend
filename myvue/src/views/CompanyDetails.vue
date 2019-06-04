@@ -232,14 +232,13 @@
 <script>
 import api from "@/utils/api";
 import companyDetails_data from "@/utils/companyDetails_data";
-import Bus from "@/assets/bus.js";
 import http from "@/utils/http";
 
 export default {
   name: "CompanyDetails",
   data() {
     return {
-      id: "",
+      id: this.$route.params.id,
       company_msg: {
         name: "",
         code: "",
@@ -255,50 +254,52 @@ export default {
       }, //公司名
       company_verify: 0, //公司审核状态
 
-      shareholderInfo_amount: 2, //股东信息消息数目
-      businessChange_amount: 1, //工商变更消息数目
-      abnormalInfo_amount: 4, //异常记录消息数目
-      legalAction_amount: 5, //法律诉讼消息数目
+      shareholderInfo_amount: 0, //股东信息消息数目
+      businessChange_amount: 0, //工商变更消息数目
+      abnormalInfo_amount: 0, //异常记录消息数目
+      legalAction_amount: 0, //法律诉讼消息数目
 
       shareholderInfo_cols: companyDetails_data.shareholder_cols, //股东信息表头
       businessChange_cols: companyDetails_data.businessChange_cols, //工商变更表头
       abnormalInfo_cols: companyDetails_data.abnormalInfo_cols, //异常记录表头
       legalAction_cols: companyDetails_data.legalAction_cols, //法律诉讼表头
 
-      taxInfo_list: [], //纳税情况列表
-      shareholderInfo_list: [], //股东信息列表
-      businessChange_list: [], //工商变更表头
-      abnormalInfo_list: [], //异常记录表头
-      legalAction_list: [] //法律诉讼表头
+      taxInfo_list: [], //纳税情况
+      shareholderInfo_list: [], //股东信息
+      businessChange_list: [], //工商变更
+      abnormalInfo_list: [], //异常记录
+      legalAction_list: [] //法律诉讼
     };
   },
   methods: {
-    company_data() {
-      this.id = this.$route.params.id;
-      console.log(this.id);
-    },
     get_data: async function() {
-      let params = { id: this.id };
       const res = await http.post(api.company_query, params);
       if (res.data) {
-        let data = res.data;
-        console.log(data);
+        let company_data = res.data;
         this.company_msg = {
-          name: data.Name,
-          code: data.Code,
-          econKind: data.EconKind,
-          address: data.Address,
-          operName: data.OperName,
-          registCapi: data.RegistCapi,
-          scope: data.Scope,
-          status: data.Status,
-          startDate: data.StartDate
+          name: company_data.Name,
+          code: company_data.Code,
+          econKind: company_data.EconKind,
+          address: company_data.Address,
+          operName: company_data.OperName,
+          registCapi: company_data.RegistCapi,
+          scope: company_data.Scope,
+          status: company_data.Status,
+          startDate: company_data.StartDate
         };
+        this.shareholderInfo_list = company_data.shareholderInfo_list;
+        this.businessChange_list = company_data.businessChange_list;
+        this.abnormalInfo_list = company_data.abnormalInfo_list;
+        this.legalAction_list = company_data.legalAction_list;
+
+        this.shareholderInfo_amount = this.shareholderInfo_list.length;
+        this.businessChange_amount = this.businessChange_list.length;
+        this.abnormalInfo_amount = this.abnormalInfo_list.length;
+        this.legalAction_amount = this.legalAction_list.length;
       }
     }
   },
   created() {
-    this.company_data();
     this.get_data();
   }
 };

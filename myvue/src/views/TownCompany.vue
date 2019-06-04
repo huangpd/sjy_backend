@@ -116,9 +116,6 @@
 <script>
 import http from "@/utils/http";
 import api from "@/utils/api";
-import jsonToExcel from "@/utils/jsonToExcel";
-import Bus from "@/assets/bus.js";
-import { regionDataPlus, CodeToText } from "element-china-area-data";
 
 export default {
   name: "TownCompany",
@@ -386,12 +383,7 @@ export default {
 
     /**公司详情 */
     company_amend_details(index, row) {
-      this.$router.push({
-        name: "Company_Details",
-        params: {
-          id: row.id
-        }
-      });
+      this.$router.push({path: `/Company_Details/${row.id}`});
     },
 
     /**修改公司提交 */
